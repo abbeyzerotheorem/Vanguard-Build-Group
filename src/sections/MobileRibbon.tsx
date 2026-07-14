@@ -1,6 +1,6 @@
 'use client';
 
-import { Phone, Calculator, Image } from 'lucide-react';
+import { Phone, Calculator, Image as ImageIcon } from 'lucide-react';
 import { constructionConfig } from '@/data/construction';
 import { cn } from '@/lib/utils';
 
@@ -36,7 +36,7 @@ export default function MobileRibbon() {
           className="mobile-ribbon-btn"
           aria-label="View our portfolio"
         >
-          <Image className="w-5 h-5" aria-hidden="true" />
+          <ImageIcon className="w-5 h-5" aria-hidden="true" />
           <span>Portfolio</span>
         </a>
       </div>
