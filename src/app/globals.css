@@ -1,0 +1,163 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: #F9FAFB;
+    --foreground: #111827;
+    --accent: #D97706;
+    --accent-light: #F59E0B;
+    --accent-dark: #B45309;
+    --structural-blue: #1E293B;
+    --structural-slate: #334155;
+    --border: #E5E7EB;
+    --border-dark: #9CA3AF;
+    --card-shadow: 0 2px 4px 0 rgb(0 0 0 / 0.04), 0 4px 8px -2px rgb(0 0 0 / 0.06);
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-body), system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* AAA contrast overrides */
+  .text-muted {
+    color: #4B5563;
+  }
+
+  /* Focus ring for keyboard nav */
+  *:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Remove focus ring for mouse users */
+  *:focus:not(:focus-visible) {
+    outline: none;
+  }
+}
+
+@layer components {
+  .container-site {
+    @apply mx-auto w-full max-w-[1200px] px-4 sm:px-6 lg:px-8;
+  }
+
+  .section-padding {
+    @apply py-16 sm:py-20 lg:py-24;
+  }
+
+  .grid-auto-fit {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-accent px-6 py-3
+           text-sm font-semibold text-white shadow-structural
+           transition-all duration-200 ease-out
+           hover:bg-accent-dark hover:shadow-structural-lg hover:-translate-y-0.5
+           active:translate-y-0 active:shadow-structural
+           focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2
+           disabled:cursor-not-allowed disabled:opacity-50;
+    min-height: 48px;
+    min-width: 48px;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border-2 border-foreground
+           bg-transparent px-6 py-3 text-sm font-semibold text-foreground
+           shadow-structural transition-all duration-200 ease-out
+           hover:bg-foreground hover:text-white hover:shadow-structural-lg
+           active:scale-[0.98]
+           focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2;
+    min-height: 48px;
+    min-width: 48px;
+  }
+
+  .card-base {
+    @apply rounded-xl border border-border bg-white shadow-card
+           transition-all duration-200 ease-out
+           hover:shadow-structural-lg;
+  }
+
+  .card-hover {
+    @apply card-base hover:-translate-y-1;
+  }
+
+  .section-title {
+    @apply text-display-xs sm:text-display-sm lg:text-display-md font-display font-bold text-foreground;
+  }
+
+  .section-subtitle {
+    @apply mt-4 max-w-2xl text-base sm:text-lg text-structural-gray;
+  }
+
+  .tag-pill {
+    @apply inline-flex items-center rounded-full border border-border bg-background px-3 py-1
+           text-xs font-medium text-structural-slate;
+  }
+
+  /* Sticky mobile ribbon */
+  .mobile-ribbon {
+    @apply fixed bottom-0 left-0 right-0 z-50 border-t border-border
+           bg-white/95 backdrop-blur-md shadow-structural-lg
+           lg:hidden;
+  }
+
+  .mobile-ribbon-inner {
+    @apply flex items-center justify-around px-4 py-3;
+  }
+
+  .mobile-ribbon-btn {
+    @apply flex flex-col items-center gap-1 text-xs font-medium text-structural-slate
+           transition-colors duration-150 hover:text-accent;
+    min-height: 48px;
+    min-width: 48px;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .bg-grid-pattern {
+    background-image:
+      linear-gradient(to right, var(--border) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--border) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  /* Aspect ratio bounding for zero CLS */
+  .aspect-container {
+    @apply relative w-full overflow-hidden;
+  }
+
+  .aspect-container > img {
+    @apply absolute inset-0 h-full w-full object-cover;
+  }
+}
+
+/* prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
