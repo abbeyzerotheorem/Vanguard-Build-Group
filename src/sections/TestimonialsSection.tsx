@@ -1,6 +1,5 @@
-import { constructionConfig } from '@/data/construction';
-import { cn } from '@/lib/utils';
-import TestimonialsCarousel from '@/components/TestimonialsCarousel';
+import { constructionConfig } from "@/data/construction";
+import TestimonialsCarousel from "@/components/TestimonialsCarousel";
 
 export default function TestimonialsSection() {
   const { testimonials } = constructionConfig;
@@ -9,19 +8,20 @@ export default function TestimonialsSection() {
     <section
       id="testimonials"
       aria-label="Client testimonials"
-      className="section-padding bg-background"
+      className="section-padding bg-bone-100/40"
     >
       <div className="container-site">
-        {/* Section Header */}
-        <div className="text-center mb-12 sm:mb-16">
-          <h2 className="section-title">What Our Clients Say</h2>
-          <p className="section-subtitle mx-auto">
-            Real words from the homeowners, developers, and institutions who trust
-            us with their most important structures.
+        <div className="mb-12 flex flex-col items-start justify-between gap-6 sm:mb-16 sm:flex-row sm:items-end">
+          <div className="max-w-2xl">
+            <p className="eyebrow">/ 08 — Reputation</p>
+            <h2 className="mt-3 section-title">What our clients say</h2>
+          </div>
+          <p className="max-w-md text-base text-ink-500">
+            Real words from the homeowners, developers, and institutions who
+            trust us with their most important structures.
           </p>
         </div>
 
-        {/* Testimonials Carousel */}
         <TestimonialsCarousel testimonials={testimonials} />
       </div>
     </section>

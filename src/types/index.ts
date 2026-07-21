@@ -115,6 +115,63 @@ export interface PromotionalState {
   safetyMilestoneCounters: StatMetric[];
 }
 
+// ─── Navigation ─────────────────────────────────────────────────────
+export interface NavLink {
+  label: string;
+  href: string;
+}
+
+export interface NavigationConfig {
+  primary: NavLink[];
+  utility: NavLink[];
+}
+
+// ─── Estimate Builder ───────────────────────────────────────────────
+export type ProjectTypeValue =
+  | "residential"
+  | "commercial"
+  | "institutional"
+  | "renovation"
+  | "infrastructure";
+
+export type ProjectSizeValue = "small" | "medium" | "large" | "xlarge";
+
+export type BudgetValue =
+  | "under500k"
+  | "500k-2m"
+  | "2m-10m"
+  | "10m-50m"
+  | "over50m";
+
+export type TimelineValue =
+  | "asap"
+  | "1-3months"
+  | "3-6months"
+  | "6-12months"
+  | "planning";
+
+export interface SelectOption<T extends string = string> {
+  value: T;
+  label: string;
+  description?: string;
+}
+
+export interface EstimateSelection {
+  projectTypes: SelectOption<ProjectTypeValue>[];
+  projectSizes: SelectOption<ProjectSizeValue>[];
+  budgetRanges: SelectOption<BudgetValue>[];
+  timelineOptions: SelectOption<TimelineValue>[];
+}
+
+export interface EstimateTier {
+  id: string;
+  label: string;
+  min: number;
+  max: number;
+  // monthly duration estimate per scope
+  months: { small: number; medium: number; large: number; xlarge: number };
+}
+
 // ─── Trust Credential ───────────────────────────────────────────────
 export interface TrustCredential {
   id: string;
@@ -144,4 +201,7 @@ export interface ConstructionConfig {
     instagram: string;
     houzz: string;
   };
+  navigation: NavigationConfig;
+  estimate: EstimateSelection;
+  estimateTiers: EstimateTier[];
 }

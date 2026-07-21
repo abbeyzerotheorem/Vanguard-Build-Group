@@ -1,6 +1,12 @@
-import { constructionConfig } from '@/data/construction';
-import { cn } from '@/lib/utils';
-import { ShieldCheck, Award, HardHat, FileCheck } from 'lucide-react';
+import { ShieldCheck, Award, HardHat, FileCheck } from "lucide-react";
+import { constructionConfig } from "@/data/construction";
+
+const credentials = [
+  { icon: ShieldCheck, label: "NHBRC Registered", meta: "BG-100527-2021" },
+  { icon: Award, label: "CIDB Grade 9GB/9CE", meta: "R130M Unlimited" },
+  { icon: HardHat, label: "OHSAS 18001 Certified", meta: "Zero Fatal Incidents" },
+  { icon: FileCheck, label: "ISO 9001:2015", meta: "Quality Management" },
+];
 
 export default function AboutSection() {
   const { team, brand } = constructionConfig;
@@ -9,96 +15,106 @@ export default function AboutSection() {
     <section
       id="about"
       aria-label="About Vanguard Build Group"
-      className="section-padding bg-white"
+      className="section-padding bg-paper"
     >
       <div className="container-site">
-        {/* Section Header */}
-        <div className="text-center mb-12 sm:mb-16">
-          <h2 className="section-title">Built on Craftsmanship &amp; Integrity</h2>
-          <p className="section-subtitle mx-auto">
-            For over {brand.yearsInBusiness} years, Vanguard Build Group has stood
-            as a pillar of structural excellence across South Africa — merging
-            time-honoured craftsmanship with modern engineering precision.
-          </p>
-        </div>
-
-        {/* Standards & Credentials Bar */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-16">
-          <div className="flex flex-col items-center gap-2 rounded-xl border border-border bg-background p-5 text-center">
-            <ShieldCheck className="w-8 h-8 text-accent" aria-hidden="true" />
-            <span className="text-xs sm:text-sm font-semibold text-structural-slate">
-              NHBRC Registered
-            </span>
-            <span className="text-xs text-structural-gray">{brand.licenseNumber}</span>
+        <div className="mb-12 grid grid-cols-1 items-end gap-8 sm:mb-16 lg:grid-cols-12">
+          <div className="lg:col-span-7">
+            <p className="eyebrow">/ 05 — Practice</p>
+            <h2 className="mt-3 text-display-md sm:text-display-lg font-display font-bold text-ink text-balance">
+              Built on craftsmanship &amp; integrity
+            </h2>
           </div>
-
-          <div className="flex flex-col items-center gap-2 rounded-xl border border-border bg-background p-5 text-center">
-            <Award className="w-8 h-8 text-accent" aria-hidden="true" />
-            <span className="text-xs sm:text-sm font-semibold text-structural-slate">
-              CIDB Grade 9GB/9CE
-            </span>
-            <span className="text-xs text-structural-gray">R130M Unlimited</span>
-          </div>
-
-          <div className="flex flex-col items-center gap-2 rounded-xl border border-border bg-background p-5 text-center">
-            <HardHat className="w-8 h-8 text-accent" aria-hidden="true" />
-            <span className="text-xs sm:text-sm font-semibold text-structural-slate">
-              OHSAS 18001 Certified
-            </span>
-            <span className="text-xs text-structural-gray">Zero Fatal Incidents</span>
-          </div>
-
-          <div className="flex flex-col items-center gap-2 rounded-xl border border-border bg-background p-5 text-center">
-            <FileCheck className="w-8 h-8 text-accent" aria-hidden="true" />
-            <span className="text-xs sm:text-sm font-semibold text-structural-slate">
-              ISO 9001:2015
-            </span>
-            <span className="text-xs text-structural-gray">Quality Management</span>
+          <div className="lg:col-span-5">
+            <p className="text-base sm:text-lg text-ink-500 text-pretty">
+              For over {brand.yearsInBusiness} years, Vanguard Build Group has
+              stood as a pillar of structural excellence across South Africa —
+              merging time-honoured craftsmanship with modern engineering
+              precision.
+            </p>
           </div>
         </div>
 
-        {/* Team Grid */}
-        <div className="mb-12">
-          <h3 className="text-display-xs font-display font-bold text-foreground text-center mb-10">
-            Leadership &amp; Master Craftsmen
-          </h3>
+        {/* Credentials bar */}
+        <div className="mb-16 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-border bg-border shadow-soft sm:grid-cols-4">
+          {credentials.map((c) => {
+            const Icon = c.icon;
+            return (
+              <div
+                key={c.label}
+                className="flex flex-col items-center gap-2 bg-paper p-5 sm:p-6 text-center transition-colors hover:bg-bone-50"
+              >
+                <Icon
+                  className="h-7 w-7 text-brass-500"
+                  strokeWidth={1.5}
+                  aria-hidden="true"
+                />
+                <span className="text-xs sm:text-sm font-semibold text-ink">
+                  {c.label}
+                </span>
+                <span className="font-mono text-[0.65rem] uppercase tracking-widest text-ink-500">
+                  {c.meta}
+                </span>
+              </div>
+            );
+          })}
+        </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-            {team.map((member) => (
+        {/* Team */}
+        <div className="mb-14">
+          <div className="mb-10 flex items-end justify-between gap-4">
+            <h3 className="text-display-xs sm:text-display-sm font-display font-bold text-ink">
+              Leadership &amp; master craftsmen
+            </h3>
+            <p className="hidden text-sm text-ink-500 sm:block">
+              {team.length} directors &middot; 50+ specialists
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {team.map((member, idx) => (
               <article
                 key={member.id}
-                className="card-hover overflow-hidden"
+                className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-paper transition-all duration-500 ease-out-quint hover:-translate-y-1 hover:border-brass-300/60 hover:shadow-structural-lg"
               >
-                {/* Avatar */}
-                <div className="aspect-container aspect-[4/3] bg-structural-slate/10">
-                  <img
-                    src={member.imageSrc}
-                    alt={member.name}
-                    className="absolute inset-0 h-full w-full object-cover"
-                    loading="lazy"
+                {/* Avatar / headshot */}
+                <div className="relative aspect-[4/5] overflow-hidden bg-bone-100">
+                  <div
+                    className="absolute inset-0 transition-transform duration-700 ease-out-quint group-hover:scale-105"
+                    style={{
+                      backgroundImage: `linear-gradient(180deg, transparent 50%, rgba(14,17,22,0.7) 100%), url('${member.imageSrc}')`,
+                      backgroundSize: "cover",
+                      backgroundPosition: "center",
+                    }}
+                    role="img"
+                    aria-label={member.name}
                   />
+                  <span className="absolute right-4 top-4 font-mono text-[0.65rem] font-semibold uppercase tracking-widest text-bone-50/80">
+                    / {String(idx + 1).padStart(2, "0")}
+                  </span>
                 </div>
 
                 {/* Content */}
-                <div className="p-5 sm:p-6">
-                  <h4 className="text-lg font-display font-bold text-foreground">
+                <div className="flex flex-1 flex-col p-6">
+                  <h4 className="font-display text-lg font-bold text-ink">
                     {member.name}
                   </h4>
-                  <p className="text-sm text-accent font-semibold mb-3">
+                  <p className="text-sm font-semibold text-brass-500">
                     {member.role}
                   </p>
 
-                  {/* Credentials */}
-                  <div className="flex flex-wrap gap-1.5 mb-3">
+                  <div className="mt-3 flex flex-wrap gap-1.5">
                     {member.credentials.map((cred) => (
-                      <span key={cred} className="tag-pill text-[10px]">
+                      <span
+                        key={cred}
+                        className="tag-pill text-[0.6rem]"
+                      >
                         {cred}
                       </span>
                     ))}
                   </div>
 
-                  {/* Bio */}
-                  <p className="text-sm text-structural-gray leading-relaxed">
+                  <p className="mt-4 text-sm leading-relaxed text-ink-500">
                     {member.bio}
                   </p>
                 </div>
@@ -107,14 +123,17 @@ export default function AboutSection() {
           </div>
         </div>
 
-        {/* Green Building & Sustainability Note */}
-        <div className="rounded-xl border border-border bg-background p-6 sm:p-8 text-center">
-          <p className="text-sm sm:text-base text-structural-gray max-w-3xl mx-auto">
-            <span className="font-semibold text-foreground">Sustainability Commitment:</span>{' '}
-            Every Vanguard project incorporates passive energy design principles,
-            water-efficient plumbing systems, and locally sourced materials wherever
-            feasible. We are proud signatories of the Green Building Council South
-            Africa&rsquo;s material stewardship pledge.
+        {/* Sustainability */}
+        <div className="relative overflow-hidden rounded-2xl border border-brass-300/40 bg-brass-50/60 p-7 sm:p-10">
+          <span className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-brass-300/30 blur-3xl" />
+          <p className="relative text-sm sm:text-base text-ink-700 sm:max-w-3xl">
+            <span className="font-display text-lg font-semibold text-ink">
+              Sustainability commitment —
+            </span>{" "}
+            every Vanguard project incorporates passive energy design
+            principles, water-efficient plumbing systems, and locally sourced
+            materials wherever feasible. We are proud signatories of the Green
+            Building Council South Africa&rsquo;s material stewardship pledge.
           </p>
         </div>
       </div>

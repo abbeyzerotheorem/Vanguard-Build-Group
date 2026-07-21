@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
-import { Inter, Archivo } from "next/font/google";
+import { Inter, Fraunces } from "next/font/google";
 import { constructionConfig } from "@/data/construction";
 import "./globals.css";
 
-const fontDisplay = Archivo({
+const fontDisplay = Fraunces({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-display",
-  weight: ["700", "800", "900"],
+  weight: "variable",
+  axes: ["SOFT", "WONK", "opsz"],
 });
 
 const fontBody = Inter({
@@ -59,10 +60,10 @@ const jsonLd = {
   "@type": ["HomeAndConstructionBusiness", "LocalBusiness"],
   name: brand.name,
   description: brand.shortDescription,
-  url: "https://vanguardbuild.co.za",
+  url: "https://vanguard-build-group.vercel.app/",
   telephone: contact.phone,
   email: contact.email,
-  image: "https://vanguardbuild.co.za/images/og-image.jpg",
+  image: "/after.jpeg",
   address: {
     "@type": "PostalAddress",
     streetAddress: contact.headquartersAddress.street,
@@ -116,7 +117,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className="min-h-screen bg-background font-body text-foreground antialiased">
+      <body className="min-h-screen bg-background font-body text-foreground antialiased selection:bg-accent selection:text-white">
         {children}
       </body>
     </html>

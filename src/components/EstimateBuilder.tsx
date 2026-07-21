@@ -1,15 +1,32 @@
 'use client';
 
-import { useState, type FormEvent } from 'react';
-import { cn } from '@/lib/utils';
-import { Loader2, ArrowLeft, ArrowRight, Check } from 'lucide-react';
+import { useMemo, useState, type FormEvent } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { cn, formatCurrency } from '@/lib/utils';
+import {
+  Loader2,
+  ArrowLeft,
+  ArrowRight,
+  Check,
+  Calculator,
+  Clock,
+  Ruler,
+} from 'lucide-react';
+import { constructionConfig } from '@/data/construction';
+import type {
+  ProjectTypeValue,
+  ProjectSizeValue,
+  BudgetValue,
+  TimelineValue,
+  EstimateTier,
+} from '@/types';
 
 interface FormData {
-  projectType: string;
+  projectType: ProjectTypeValue | '';
   projectScope: string;
-  projectSize: string;
-  budget: string;
-  timeline: string;
+  projectSize: ProjectSizeValue | '';
+  budget: BudgetValue | '';
+  timeline: TimelineValue;
   fullName: string;
   email: string;
   phone: string;
@@ -28,36 +45,7 @@ const initialFormData: FormData = {
   notes: '',
 };
 
-const projectTypes = [
-  { value: 'residential', label: 'Residential Construction' },
-  { value: 'commercial', label: 'Commercial Construction' },
-  { value: 'institutional', label: 'Institutional / Public' },
-  { value: 'renovation', label: 'Renovation & Remodeling' },
-  { value: 'infrastructure', label: 'Infrastructure & Civil' },
-];
-
-const projectSizes = [
-  { value: 'small', label: 'Small (< 500 m²)' },
-  { value: 'medium', label: 'Medium (500 – 2 000 m²)' },
-  { value: 'large', label: 'Large (2 000 – 10 000 m²)' },
-  { value: 'xlarge', label: 'Extra Large (> 10 000 m²)' },
-];
-
-const budgetRanges = [
-  { value: 'under500k', label: 'Under R500,000' },
-  { value: '500k-2m', label: 'R500,000 – R2,000,000' },
-  { value: '2m-10m', label: 'R2,000,000 – R10,000,000' },
-  { value: '10m-50m', label: 'R10,000,000 – R50,000,000' },
-  { value: 'over50m', label: 'Over R50,000,000' },
-];
-
-const timelineOptions = [
-  { value: 'asap', label: 'As soon as possible' },
-  { value: '1-3months', label: '1 – 3 months' },
-  { value: '3-6months', label: '3 – 6 months' },
-  { value: '6-12months', label: '6 – 12 months' },
-  { value: 'planning', label: 'Still planning' },
-];
+const { estimate, estimateTiers } = constructionConfig;
 
 const steps = [
   { step: 1, title: 'Project Type', description: 'What kind of project?' },
@@ -66,12 +54,53 @@ const steps = [
   { step: 4, title: 'Contact Info', description: 'How to reach you' },
 ];
 
+function findTiers(projectType: string, projectSize: string): EstimateTier[] {
+  if (!projectType || !projectSize) return [];
+  const exactId = `${projectType}-${projectSize}`;
+  const exact = estimateTiers.find((t) => t.id === exactId);
+  if (exact) return [exact];
+  return estimateTiers.filter((t) => t.id.startsWith(projectType));
+}
+
+function computeEstimate(
+  projectType: string,
+  projectSize: string,
+  budget: string,
+): { min: number; max: number; label: string; months: number } | null {
+  const tiers = findTiers(projectType, projectSize);
+  if (tiers.length === 0) return null;
+  const tier = tiers[0];
+  const months = tier.months[projectSize as keyof typeof tier.months] ?? tier.months.medium;
+  let min = tier.min;
+  let max = tier.max;
+  if (budget) {
+    const budgetUpperMap: Record<string, number> = {
+      under500k: 500_000,
+      '500k-2m': 2_000_000,
+      '2m-10m': 10_000_000,
+      '10m-50m': 50_000_000,
+      over50m: 130_000_000,
+    };
+    const upper = budgetUpperMap[budget] ?? max;
+    min = Math.min(min, upper * 0.6);
+    max = Math.min(max, upper);
+  }
+  min = Math.max(min, 250_000);
+  max = Math.max(max, min + 100_000);
+  return { min, max, label: tier.label, months };
+}
+
 export default function EstimateBuilder() {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+
+  const estimateResult = useMemo(
+    () => computeEstimate(formData.projectType, formData.projectSize, formData.budget),
+    [formData.projectType, formData.projectSize, formData.budget],
+  );
 
   const updateField = (field: keyof FormData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -101,21 +130,18 @@ export default function EstimateBuilder() {
       if (!formData.budget) {
         newErrors.budget = 'Please select a budget range.';
       }
-      if (!formData.timeline) {
-        newErrors.timeline = 'Please select a timeline.';
-      }
     }
     if (currentStep === 4) {
       if (!formData.fullName.trim()) {
-        newErrors.fullName = 'Full name is required.';
+        newErrors.fullName = 'Please enter your name.';
       }
       if (!formData.email.trim()) {
-        newErrors.email = 'Email address is required.';
-      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+        newErrors.email = 'Please enter your email.';
+      } else if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(formData.email)) {
         newErrors.email = 'Please enter a valid email address.';
       }
       if (!formData.phone.trim()) {
-        newErrors.phone = 'Phone number is required.';
+        newErrors.phone = 'Please enter your phone number.';
       }
     }
     setErrors(newErrors);
@@ -136,281 +162,434 @@ export default function EstimateBuilder() {
     e.preventDefault();
     if (!validateStep()) return;
     setIsSubmitting(true);
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    console.log('Estimate Request Submitted:', formData);
+    await new Promise((resolve) => setTimeout(resolve, 1500));
     setIsSubmitting(false);
     setIsSubmitted(true);
   };
 
   if (isSubmitted) {
     return (
-      <div className="mx-auto max-w-xl rounded-2xl border border-zinc-200 bg-white p-8 text-center shadow-sm">
-        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
-          <Check className="h-8 w-8 text-green-600" />
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="rounded-2xl border border-forest-500/30 bg-forest-500/5 p-8 sm:p-10 text-center"
+      >
+        <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-forest-500/10">
+          <Check className="h-8 w-8 text-forest-500" strokeWidth={2.5} />
         </div>
-        <h2 className="text-xl font-bold text-zinc-900">Estimate Request Received!</h2>
-        <p className="mt-2 text-zinc-600">
-          Thank you, {formData.fullName.split(' ')[0]}. Our team will review your project and reach
-          out within 1–2 business days.
+        <h3 className="text-display-xs font-display font-bold text-ink">
+          Estimate Request Received!
+        </h3>
+        <p className="mt-3 max-w-lg mx-auto text-sm sm:text-base text-ink-500 leading-relaxed">
+          Thanks, {formData.fullName}! We&rsquo;ll review your project details and get back
+          within <strong className="text-ink">48 hours</strong> with a detailed line-item estimate.
         </p>
-      </div>
+        <button
+          type="button"
+          onClick={() => {
+            setFormData(initialFormData);
+            setCurrentStep(1);
+            setIsSubmitted(false);
+          }}
+          className="btn-primary mt-8"
+        >
+          Submit Another Request
+        </button>
+      </motion.div>
     );
   }
 
   return (
-    <div className="mx-auto max-w-2xl">
-      {/* Step Indicators */}
-      <nav className="mb-8" aria-label="Progress">
-        <ol className="flex items-center">
-          {steps.map((s, idx) => (
-            <li key={s.step} className={cn('flex items-center', idx < steps.length - 1 && 'flex-1')}>
-              <div className="flex flex-col items-center">
-                <span
-                  className={cn(
-                    'flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold transition-colors',
-                    currentStep > s.step
-                      ? 'bg-amber-600 text-white'
-                      : currentStep === s.step
-                        ? 'border-2 border-amber-600 bg-amber-50 text-amber-700'
-                        : 'border-2 border-zinc-300 bg-white text-zinc-400'
-                  )}
-                  aria-current={currentStep === s.step ? 'step' : undefined}
-                >
-                  {currentStep > s.step ? <Check className="h-5 w-5" /> : s.step}
+    <div className="rounded-2xl border border-border bg-paper shadow-structural overflow-hidden">
+      {/* Live Estimate Preview */}
+      <AnimatePresence>
+        {estimateResult && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+            className="overflow-hidden border-b border-brass-300/20 bg-gradient-to-r from-brass-50/80 via-brass-50/40 to-brass-50/80"
+          >
+            <div className="px-6 py-5 sm:px-8 sm:py-6">
+              <p className="eyebrow mb-2">/ Estimated Range</p>
+              <div className="flex flex-wrap items-baseline gap-x-6 gap-y-2">
+                <span className="font-display text-display-sm font-bold text-ink">
+                  {formatCurrency(estimateResult.min)}
+                  <span className="text-display-xs text-ink-400 mx-1.5">&ndash;</span>
+                  {formatCurrency(estimateResult.max)}
                 </span>
-                <span
-                  className={cn(
-                    'mt-1 hidden text-xs font-medium sm:block',
-                    currentStep >= s.step ? 'text-zinc-900' : 'text-zinc-400'
-                  )}
-                >
-                  {s.title}
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-brass-300/40 bg-brass-50 px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-wider text-brass-600">
+                  <Clock className="h-3 w-3" aria-hidden="true" />
+                  {estimateResult.months} months
                 </span>
               </div>
-              {idx < steps.length - 1 && (
-                <div
-                  className={cn(
-                    'mx-2 h-0.5 flex-1 sm:mx-4',
-                    currentStep > s.step ? 'bg-amber-600' : 'bg-zinc-200'
-                  )}
-                />
-              )}
-            </li>
-          ))}
-        </ol>
-      </nav>
+              <p className="mt-1 text-xs text-ink-400">{estimateResult.label}</p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      {/* Form Card */}
-      <form onSubmit={handleSubmit} noValidate>
-        <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm sm:p-8">
-          {/* Step 1: Project Type */}
-          {currentStep === 1 && (
-            <div>
-              <h2 className="text-lg font-semibold text-zinc-900">
-                What type of project are you planning?
-              </h2>
-              <p className="mt-1 text-sm text-zinc-500">
-                Select the category that best describes your construction project.
-              </p>
-              <fieldset className="mt-6 space-y-3">
-                {projectTypes.map((pt) => (
-                  <label
-                    key={pt.value}
-                    className={cn(
-                      'flex cursor-pointer items-center gap-3 rounded-lg border px-4 py-3 transition-colors',
-                      formData.projectType === pt.value
-                        ? 'border-amber-500 bg-amber-50 ring-1 ring-amber-500'
-                        : 'border-zinc-200 hover:border-zinc-300'
-                    )}
+      {/* Progress Steps */}
+      <div className="border-b border-border px-6 py-5 sm:px-8">
+        <div className="flex items-center justify-between">
+          {steps.map((step) => {
+            const isActive = currentStep === step.step;
+            const isCompleted = currentStep > step.step;
+            return (
+              <div key={step.step} className="flex items-center gap-2">
+                <span
+                  className={cn(
+                    'flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold transition-all duration-300',
+                    isActive
+                      ? 'bg-brass-500 text-bone-50 shadow-brass'
+                      : isCompleted
+                        ? 'bg-forest-500 text-bone-50'
+                        : 'border border-border text-ink-400',
+                  )}
+                >
+                  {isCompleted ? <Check className="h-3.5 w-3.5" strokeWidth={3} /> : step.step}
+                </span>
+                <span
+                  className={cn(
+                    'hidden text-sm font-medium transition-colors sm:inline',
+                    isActive ? 'text-ink' : 'text-ink-400',
+                  )}
+                >
+                  {step.title}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Form Body */}
+      <form onSubmit={handleSubmit} className="px-6 py-6 sm:px-8 sm:py-8">
+        <div className="min-h-[300px]">
+          <AnimatePresence mode="wait">
+            {/* Step 1: Project Type */}
+            {currentStep === 1 && (
+              <motion.div
+                key="step-1"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <h3 className="text-display-xs font-display font-bold text-ink">Select Project Type</h3>
+                <p className="mt-1.5 text-sm text-ink-500">What kind of construction project are you planning?</p>
+                <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  {estimate.projectTypes.map((type) => (
+                    <button
+                      key={type.value}
+                      type="button"
+                      onClick={() => updateField('projectType', type.value)}
+                      className={cn(
+                        'group relative flex items-center gap-3 rounded-xl border px-5 py-4 text-left text-sm font-medium transition-all duration-300',
+                        formData.projectType === type.value
+                          ? 'border-brass-400 bg-brass-50 text-ink ring-2 ring-brass-400/20'
+                          : 'border-border bg-paper text-ink-500 hover:border-ink-400 hover:text-ink',
+                      )}
+                    >
+                      <span
+                        className={cn(
+                          'flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-all',
+                          formData.projectType === type.value
+                            ? 'border-brass-500 bg-brass-500'
+                            : 'border-ink-400 group-hover:border-ink',
+                        )}
+                      >
+                        {formData.projectType === type.value && (
+                          <Check className="h-3 w-3 text-bone-50" strokeWidth={3} />
+                        )}
+                      </span>
+                      <span>{type.label}</span>
+                    </button>
+                  ))}
+                </div>
+                {errors.projectType && (
+                  <motion.p
+                    initial={{ opacity: 0, y: -4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mt-2 text-xs font-medium text-rust-500"
                   >
-                    <input
-                      type="radio"
-                      name="projectType"
-                      value={pt.value}
-                      checked={formData.projectType === pt.value}
-                      onChange={(e) => updateField('projectType', e.target.value)}
-                      className="h-4 w-4 accent-amber-600"
+                    {errors.projectType}
+                  </motion.p>
+                )}
+              </motion.div>
+            )}
+
+            {/* Step 2: Project Scope */}
+            {currentStep === 2 && (
+              <motion.div
+                key="step-2"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <h3 className="text-display-xs font-display font-bold text-ink">Project Scope</h3>
+                <p className="mt-1.5 text-sm text-ink-500">Describe your project and its size.</p>
+                <div className="mt-5 space-y-5">
+                  <div>
+                    <label htmlFor="scope" className="block text-sm font-medium text-ink mb-1.5">
+                      Project description <span className="text-rust-500">*</span>
+                    </label>
+                    <textarea
+                      id="scope"
+                      rows={3}
+                      value={formData.projectScope}
+                      onChange={(e) => updateField('projectScope', e.target.value)}
+                      placeholder="Describe the scope, key requirements, and any special considerations..."
+                      className="w-full rounded-xl border border-border bg-paper px-4 py-3 text-sm text-ink placeholder-ink-400 transition-all duration-200 focus:border-brass-400 focus:outline-none focus:ring-2 focus:ring-brass-400/20"
                     />
-                    <span className="text-sm font-medium text-zinc-900">{pt.label}</span>
-                  </label>
-                ))}
-              </fieldset>
-              {errors.projectType && <p className="mt-1 text-xs text-red-600">{errors.projectType}</p>}
-            </div>
-          )}
+                    {errors.projectScope && (
+                      <motion.p
+                        initial={{ opacity: 0, y: -4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="mt-1.5 text-xs font-medium text-rust-500"
+                      >
+                        {errors.projectScope}
+                      </motion.p>
+                    )}
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-ink mb-2.5">
+                      Approximate project size <span className="text-rust-500">*</span>
+                    </label>
+                    <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
+                      {estimate.projectSizes.map((size) => (
+                        <button
+                          key={size.value}
+                          type="button"
+                          onClick={() => updateField('projectSize', size.value)}
+                          className={cn(
+                            'rounded-xl border px-3 py-3 text-center text-xs font-medium transition-all duration-200 sm:text-sm',
+                            formData.projectSize === size.value
+                              ? 'border-brass-400 bg-brass-50 text-ink ring-2 ring-brass-400/20'
+                              : 'border-border bg-paper text-ink-500 hover:border-ink-400 hover:text-ink',
+                          )}
+                        >
+                          <Ruler className="mx-auto mb-1 h-4 w-4 opacity-60" aria-hidden="true" />
+                          {size.label}
+                        </button>
+                      ))}
+                    </div>
+                    {errors.projectSize && (
+                      <motion.p
+                        initial={{ opacity: 0, y: -4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="mt-1.5 text-xs font-medium text-rust-500"
+                      >
+                        {errors.projectSize}
+                      </motion.p>
+                    )}
+                  </div>
+                </div>
+              </motion.div>
+            )}
 
-          {/* Step 2: Project Scope */}
-          {currentStep === 2 && (
-            <div>
-              <h2 className="text-lg font-semibold text-zinc-900">
-                Tell us about your project scope
-              </h2>
-              <p className="mt-1 text-sm text-zinc-500">
-                Provide details about the size and scope of your project.
-              </p>
-              <div className="mt-6 space-y-5">
-                <div>
-                  <label htmlFor="projectSize" className="block text-sm font-medium text-zinc-700 mb-1">
-                    Approximate size
-                  </label>
-                  <select
-                    id="projectSize"
-                    value={formData.projectSize}
-                    onChange={(e) => updateField('projectSize', e.target.value)}
-                    className="w-full rounded-lg border border-zinc-300 bg-white px-4 py-2.5 text-sm text-zinc-900 placeholder-zinc-400 transition-colors focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
-                  >
-                    <option value="">Select size…</option>
-                    {projectSizes.map((s) => (
-                      <option key={s.value} value={s.value}>{s.label}</option>
-                    ))}
-                  </select>
-                  {errors.projectSize && <p className="mt-1 text-xs text-red-600">{errors.projectSize}</p>}
+            {/* Step 3: Budget & Timeline */}
+            {currentStep === 3 && (
+              <motion.div
+                key="step-3"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <h3 className="text-display-xs font-display font-bold text-ink">Budget &amp; Timeline</h3>
+                <p className="mt-1.5 text-sm text-ink-500">Help us understand your constraints.</p>
+                <div className="mt-5 space-y-6">
+                  <div>
+                    <label className="block text-sm font-medium text-ink mb-2.5">
+                      Budget range <span className="text-rust-500">*</span>
+                    </label>
+                    <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+                      {estimate.budgetRanges.map((b) => (
+                        <button
+                          key={b.value}
+                          type="button"
+                          onClick={() => updateField('budget', b.value)}
+                          className={cn(
+                            'rounded-xl border px-5 py-3.5 text-left text-sm font-medium transition-all duration-200',
+                            formData.budget === b.value
+                              ? 'border-brass-400 bg-brass-50 text-ink ring-2 ring-brass-400/20'
+                              : 'border-border bg-paper text-ink-500 hover:border-ink-400 hover:text-ink',
+                          )}
+                        >
+                          <span className="font-semibold">{b.label}</span>
+                          {b.description && (
+                            <span className="mt-0.5 block text-[0.7rem] text-ink-400">
+                              {b.description}
+                            </span>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                    {errors.budget && (
+                      <motion.p
+                        initial={{ opacity: 0, y: -4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="mt-1.5 text-xs font-medium text-rust-500"
+                      >
+                        {errors.budget}
+                      </motion.p>
+                    )}
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-ink mb-2.5">
+                      Desired timeline
+                    </label>
+                    <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
+                      {estimate.timelineOptions.map((t) => (
+                        <button
+                          key={t.value}
+                          type="button"
+                          onClick={() => updateField('timeline', t.value)}
+                          className={cn(
+                            'rounded-xl border px-3 py-3 text-center text-xs font-medium transition-all duration-200 sm:text-sm',
+                            formData.timeline === t.value
+                              ? 'border-brass-400 bg-brass-50 text-ink ring-2 ring-brass-400/20'
+                              : 'border-border bg-paper text-ink-500 hover:border-ink-400 hover:text-ink',
+                          )}
+                        >
+                          {t.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <label htmlFor="projectScope" className="block text-sm font-medium text-zinc-700 mb-1">
-                    Project details
-                  </label>
-                  <textarea
-                    id="projectScope"
-                    rows={4}
-                    value={formData.projectScope}
-                    onChange={(e) => updateField('projectScope', e.target.value)}
-                    placeholder="Describe your project scope, special requirements, and any other relevant details…"
-                    className="w-full rounded-lg border border-zinc-300 bg-white px-4 py-2.5 text-sm text-zinc-900 placeholder-zinc-400 transition-colors focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
-                  />
-                  {errors.projectScope && <p className="mt-1 text-xs text-red-600">{errors.projectScope}</p>}
-                </div>
-              </div>
-            </div>
-          )}
+              </motion.div>
+            )}
 
-          {/* Step 3: Budget & Timeline */}
-          {currentStep === 3 && (
-            <div>
-              <h2 className="text-lg font-semibold text-zinc-900">Budget & Timeline</h2>
-              <p className="mt-1 text-sm text-zinc-500">
-                Help us understand your budget range and desired timeline.
-              </p>
-              <div className="mt-6 space-y-5">
-                <div>
-                  <label htmlFor="budget" className="block text-sm font-medium text-zinc-700 mb-1">
-                    Budget range
-                  </label>
-                  <select
-                    id="budget"
-                    value={formData.budget}
-                    onChange={(e) => updateField('budget', e.target.value)}
-                    className="w-full rounded-lg border border-zinc-300 bg-white px-4 py-2.5 text-sm text-zinc-900 placeholder-zinc-400 transition-colors focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
-                  >
-                    <option value="">Select budget range…</option>
-                    {budgetRanges.map((b) => (
-                      <option key={b.value} value={b.value}>{b.label}</option>
-                    ))}
-                  </select>
-                  {errors.budget && <p className="mt-1 text-xs text-red-600">{errors.budget}</p>}
+            {/* Step 4: Contact Info */}
+            {currentStep === 4 && (
+              <motion.div
+                key="step-4"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <h3 className="text-display-xs font-display font-bold text-ink">Your Contact Information</h3>
+                <p className="mt-1.5 text-sm text-ink-500">How should we reach you?</p>
+                <div className="mt-5 space-y-4">
+                  <div>
+                    <label htmlFor="name" className="block text-sm font-medium text-ink mb-1.5">
+                      Full name <span className="text-rust-500">*</span>
+                    </label>
+                    <input
+                      id="name"
+                      type="text"
+                      value={formData.fullName}
+                      onChange={(e) => updateField('fullName', e.target.value)}
+                      placeholder="John Doe"
+                      className="w-full rounded-xl border border-border bg-paper px-4 py-3 text-sm text-ink placeholder-ink-400 transition-all duration-200 focus:border-brass-400 focus:outline-none focus:ring-2 focus:ring-brass-400/20"
+                    />
+                    {errors.fullName && (
+                      <motion.p
+                        initial={{ opacity: 0, y: -4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="mt-1.5 text-xs font-medium text-rust-500"
+                      >
+                        {errors.fullName}
+                      </motion.p>
+                    )}
+                  </div>
+                  <div>
+                    <label htmlFor="email" className="block text-sm font-medium text-ink mb-1.5">
+                      Email address <span className="text-rust-500">*</span>
+                    </label>
+                    <input
+                      id="email"
+                      type="email"
+                      value={formData.email}
+                      onChange={(e) => updateField('email', e.target.value)}
+                      placeholder="john@example.com"
+                      className="w-full rounded-xl border border-border bg-paper px-4 py-3 text-sm text-ink placeholder-ink-400 transition-all duration-200 focus:border-brass-400 focus:outline-none focus:ring-2 focus:ring-brass-400/20"
+                    />
+                    {errors.email && (
+                      <motion.p
+                        initial={{ opacity: 0, y: -4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="mt-1.5 text-xs font-medium text-rust-500"
+                      >
+                        {errors.email}
+                      </motion.p>
+                    )}
+                  </div>
+                  <div>
+                    <label htmlFor="phone" className="block text-sm font-medium text-ink mb-1.5">
+                      Phone number <span className="text-rust-500">*</span>
+                    </label>
+                    <input
+                      id="phone"
+                      type="tel"
+                      value={formData.phone}
+                      onChange={(e) => updateField('phone', e.target.value)}
+                      placeholder="+27 82 123 4567"
+                      className="w-full rounded-xl border border-border bg-paper px-4 py-3 text-sm text-ink placeholder-ink-400 transition-all duration-200 focus:border-brass-400 focus:outline-none focus:ring-2 focus:ring-brass-400/20"
+                    />
+                    {errors.phone && (
+                      <motion.p
+                        initial={{ opacity: 0, y: -4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="mt-1.5 text-xs font-medium text-rust-500"
+                      >
+                        {errors.phone}
+                      </motion.p>
+                    )}
+                  </div>
+                  <div>
+                    <label htmlFor="notes" className="block text-sm font-medium text-ink mb-1.5">
+                      Additional notes <span className="text-ink-400">(optional)</span>
+                    </label>
+                    <textarea
+                      id="notes"
+                      rows={3}
+                      value={formData.notes}
+                      onChange={(e) => updateField('notes', e.target.value)}
+                      placeholder="Anything else we should know?"
+                      className="w-full rounded-xl border border-border bg-paper px-4 py-3 text-sm text-ink placeholder-ink-400 transition-all duration-200 focus:border-brass-400 focus:outline-none focus:ring-2 focus:ring-brass-400/20"
+                    />
+                  </div>
                 </div>
-                <div>
-                  <label htmlFor="timeline" className="block text-sm font-medium text-zinc-700 mb-1">
-                    Desired timeline
-                  </label>
-                  <select
-                    id="timeline"
-                    value={formData.timeline}
-                    onChange={(e) => updateField('timeline', e.target.value)}
-                    className="w-full rounded-lg border border-zinc-300 bg-white px-4 py-2.5 text-sm text-zinc-900 placeholder-zinc-400 transition-colors focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
-                  >
-                    {timelineOptions.map((t) => (
-                      <option key={t.value} value={t.value}>{t.label}</option>
-                    ))}
-                  </select>
-                  {errors.timeline && <p className="mt-1 text-xs text-red-600">{errors.timeline}</p>}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Step 4: Contact Info */}
-          {currentStep === 4 && (
-            <div>
-              <h2 className="text-lg font-semibold text-zinc-900">Your Contact Information</h2>
-              <p className="mt-1 text-sm text-zinc-500">
-                We&apos;ll use this info to send your estimate.
-              </p>
-              <div className="mt-6 space-y-5">
-                <div>
-                  <label htmlFor="fullName" className="block text-sm font-medium text-zinc-700 mb-1">
-                    Full name <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    id="fullName"
-                    type="text"
-                    value={formData.fullName}
-                    onChange={(e) => updateField('fullName', e.target.value)}
-                    placeholder="John Doe"
-                    className="w-full rounded-lg border border-zinc-300 bg-white px-4 py-2.5 text-sm text-zinc-900 placeholder-zinc-400 transition-colors focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
-                  />
-                  {errors.fullName && <p className="mt-1 text-xs text-red-600">{errors.fullName}</p>}
-                </div>
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-zinc-700 mb-1">
-                    Email address <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    id="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => updateField('email', e.target.value)}
-                    placeholder="john@example.com"
-                    className="w-full rounded-lg border border-zinc-300 bg-white px-4 py-2.5 text-sm text-zinc-900 placeholder-zinc-400 transition-colors focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
-                  />
-                  {errors.email && <p className="mt-1 text-xs text-red-600">{errors.email}</p>}
-                </div>
-                <div>
-                  <label htmlFor="phone" className="block text-sm font-medium text-zinc-700 mb-1">
-                    Phone number <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    id="phone"
-                    type="tel"
-                    value={formData.phone}
-                    onChange={(e) => updateField('phone', e.target.value)}
-                    placeholder="+27 82 123 4567"
-                    className="w-full rounded-lg border border-zinc-300 bg-white px-4 py-2.5 text-sm text-zinc-900 placeholder-zinc-400 transition-colors focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
-                  />
-                  {errors.phone && <p className="mt-1 text-xs text-red-600">{errors.phone}</p>}
-                </div>
-                <div>
-                  <label htmlFor="notes" className="block text-sm font-medium text-zinc-700 mb-1">
-                    Additional notes (optional)
-                  </label>
-                  <textarea
-                    id="notes"
-                    rows={3}
-                    value={formData.notes}
-                    onChange={(e) => updateField('notes', e.target.value)}
-                    placeholder="Anything else we should know?"
-                    className="w-full rounded-lg border border-zinc-300 bg-white px-4 py-2.5 text-sm text-zinc-900 placeholder-zinc-400 transition-colors focus:border-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
-                  />
-                </div>
-              </div>
-            </div>
-          )}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
+        {/* Live Estimate Summary Bar */}
+        {estimateResult && currentStep < 3 && (
+          <div className="mt-6 rounded-xl border border-brass-300/20 bg-brass-50/60 px-5 py-3">
+            <div className="flex items-center justify-between gap-4">
+              <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-brass-600">
+                <Calculator className="h-4 w-4" aria-hidden="true" />
+                Projected estimate
+              </span>
+              <span className="font-display text-sm font-bold text-ink">
+                {formatCurrency(estimateResult.min)} &ndash; {formatCurrency(estimateResult.max)}
+              </span>
+            </div>
+          </div>
+        )}
+
         {/* Navigation Buttons */}
-        <div className="mt-6 flex items-center justify-between">
+        <div className="mt-6 flex items-center justify-between border-t border-border pt-6">
           <button
             type="button"
             onClick={handleBack}
             disabled={currentStep === 1}
             className={cn(
-              'inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-medium transition-colors',
+              'inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition-all duration-200',
               currentStep === 1
-                ? 'cursor-not-allowed text-zinc-300'
-                : 'border border-zinc-300 text-zinc-700 hover:bg-zinc-50'
+                ? 'cursor-not-allowed text-ink-300'
+                : 'border border-border text-ink hover:border-ink hover:bg-ink hover:text-bone-50',
             )}
           >
-            <ArrowLeft className="h-4 w-4" />
+            <ArrowLeft className="h-4 w-4" aria-hidden="true" />
             Back
           </button>
 
@@ -418,24 +597,27 @@ export default function EstimateBuilder() {
             <button
               type="button"
               onClick={handleNext}
-              className="inline-flex items-center gap-2 rounded-lg bg-amber-600 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-amber-700"
+              className="btn-primary"
             >
-              Next
-              <ArrowRight className="h-4 w-4" />
+              Next Step
+              <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </button>
           ) : (
             <button
               type="submit"
               disabled={isSubmitting}
-              className="inline-flex items-center gap-2 rounded-lg bg-amber-600 px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-amber-700 disabled:cursor-not-allowed disabled:opacity-60"
+              className="btn-primary"
             >
               {isSubmitting ? (
                 <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Submitting…
+                  <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                  Submitting&hellip;
                 </>
               ) : (
-                'Submit Estimate Request'
+                <>
+                  Submit Estimate Request
+                  <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                </>
               )}
             </button>
           )}

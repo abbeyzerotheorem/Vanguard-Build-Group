@@ -14,6 +14,12 @@ import {
   Award,
   Shield,
   ClipboardList,
+  Hammer,
+  PenTool,
+  DraftingCompass,
+  Building,
+  Cog,
+  Construction,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -31,6 +37,12 @@ const iconMap: Record<string, LucideIcon> = {
   Award,
   Shield,
   ClipboardList,
+  Hammer,
+  PenTool,
+  DraftingCompass,
+  Building,
+  Cog,
+  Construction,
 };
 
 export default function IconRenderer({

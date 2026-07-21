@@ -1,8 +1,10 @@
-'use client';
+"use client";
 
-import { cn } from '@/lib/utils';
-import IconRenderer from './IconRenderer';
-import type { Milestone } from '@/types';
+import { useRef } from "react";
+import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
+import { cn } from "@/lib/utils";
+import IconRenderer from "./IconRenderer";
+import type { Milestone } from "@/types";
 
 interface MilestoneTrackerProps {
   milestones: Milestone[];
@@ -13,109 +15,104 @@ export default function MilestoneTracker({
   milestones,
   className,
 }: MilestoneTrackerProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const prefersReducedMotion = useReducedMotion();
+
+  // Scroll-driven line progress (desktop horizontal)
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start 80%", "end 20%"],
+  });
+  const desktopLineWidth = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
+
+  // Mobile (vertical) — use same progress scaled to the height
+  const mobileLineHeight = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
+
   return (
-    <div className={cn('', className)}>
-      {/* Desktop: Horizontal timeline */}
-      <div className="hidden md:block">
-        <div className="relative flex items-start justify-between">
-          {/* Background connector line */}
-          <div className="absolute top-8 left-0 right-0 h-0.5 bg-zinc-200" />
+    <div ref={containerRef} className={cn("relative", className)}>
+      {/* Desktop: horizontal timeline */}
+      <div className="hidden lg:block">
+        <div className="relative">
+          {/* Background rail */}
+          <div
+            className="absolute left-0 right-0 top-[34px] h-px bg-border"
+            aria-hidden="true"
+          />
+          {/* Animated progress line */}
+          {!prefersReducedMotion && (
+            <motion.div
+              className="absolute left-0 top-[34px] h-px origin-left bg-brass-500"
+              style={{ width: desktopLineWidth }}
+              aria-hidden="true"
+            />
+          )}
 
-          <div className="relative flex w-full justify-between">
+          <ol className="relative grid grid-cols-7 gap-2">
             {milestones.map((milestone, idx) => (
-              <div key={milestone.id} className="flex flex-col items-center text-center" style={{ flex: '1 1 0%' }}>
-                {/* Icon circle */}
-                <div
-                  className={cn(
-                    'relative z-10 flex h-16 w-16 items-center justify-center rounded-full border-2 transition-colors',
-                    idx === 0
-                      ? 'border-amber-600 bg-amber-50 text-amber-700'
-                      : 'border-zinc-300 bg-white text-zinc-500'
-                  )}
-                >
+              <li
+                key={milestone.id}
+                className="relative flex flex-col items-center text-center"
+              >
+                {/* Index + node */}
+                <span className="mb-3 font-mono text-[0.65rem] font-semibold uppercase tracking-widest text-ink-400">
+                  / {String(idx + 1).padStart(2, "0")}
+                </span>
+                <div className="flex h-[68px] w-[68px] items-center justify-center rounded-full border-2 border-border bg-paper text-ink-500 shadow-soft transition-all duration-500">
                   <IconRenderer name={milestone.icon} className="h-7 w-7" />
-                  {/* Completion check */}
-                  {idx === 0 && (
-                    <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-amber-600 text-[10px] text-white">
-                      ✓
-                    </span>
-                  )}
                 </div>
-
-                {/* Connector line after this node */}
-                {idx < milestones.length - 1 && (
-                  <div
-                    className={cn(
-                      'absolute top-8 h-0.5',
-                      idx === 0 ? 'bg-amber-600' : 'bg-zinc-200'
-                    )}
-                    style={{
-                      left: '50%',
-                      width: '100%',
-                      zIndex: 0,
-                    }}
-                  />
-                )}
-
-                {/* Content */}
-                <div className="mt-4 px-2">
-                  <h3 className="text-sm font-semibold text-zinc-900">
-                    {milestone.title}
-                  </h3>
-                  <p className="mt-1 text-xs text-zinc-500">
-                    {milestone.description}
-                  </p>
-                  <span className="mt-2 inline-block rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-700">
-                    {milestone.duration}
-                  </span>
-                </div>
-              </div>
+                <h3 className="mt-5 font-display text-sm font-semibold text-ink">
+                  {milestone.title}
+                </h3>
+                <p className="mt-1.5 text-xs leading-relaxed text-ink-500">
+                  {milestone.description}
+                </p>
+                <span className="mt-3 inline-flex items-center rounded-full border border-brass-300/50 bg-brass-50 px-2.5 py-0.5 text-[0.65rem] font-semibold uppercase tracking-wider text-brass-600">
+                  {milestone.duration}
+                </span>
+              </li>
             ))}
-          </div>
+          </ol>
         </div>
       </div>
 
-      {/* Mobile: Vertical timeline */}
-      <div className="md:hidden">
-        <div className="relative">
-          {/* Vertical connector line */}
-          <div className="absolute top-0 bottom-0 left-8 w-0.5 bg-zinc-200" />
+      {/* Mobile & tablet: vertical timeline */}
+      <div className="lg:hidden">
+        <div className="relative pl-12 sm:pl-16">
+          {/* Background rail */}
+          <div
+            className="absolute bottom-2 left-5 top-2 w-px bg-border sm:left-7"
+            aria-hidden="true"
+          />
+          {/* Animated progress line */}
+          {!prefersReducedMotion && (
+            <motion.div
+              className="absolute left-5 top-2 w-px origin-top bg-brass-500 sm:left-7"
+              style={{ height: mobileLineHeight }}
+              aria-hidden="true"
+            />
+          )}
 
-          <div className="space-y-8">
+          <ol className="space-y-10">
             {milestones.map((milestone, idx) => (
-              <div key={milestone.id} className="relative flex gap-6">
-                {/* Icon circle */}
-                <div
-                  className={cn(
-                    'relative z-10 flex h-16 w-16 shrink-0 items-center justify-center rounded-full border-2 transition-colors',
-                    idx === 0
-                      ? 'border-amber-600 bg-amber-50 text-amber-700'
-                      : 'border-zinc-300 bg-white text-zinc-500'
-                  )}
-                >
-                  <IconRenderer name={milestone.icon} className="h-7 w-7" />
-                  {idx === 0 && (
-                    <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-amber-600 text-[10px] text-white">
-                      ✓
-                    </span>
-                  )}
+              <li key={milestone.id} className="relative">
+                <span className="absolute -left-12 top-1 font-mono text-[0.65rem] font-semibold uppercase tracking-widest text-ink-400 sm:-left-16">
+                  / {String(idx + 1).padStart(2, "0")}
+                </span>
+                <div className="absolute -left-[34px] top-1 flex h-10 w-10 items-center justify-center rounded-full border-2 border-border bg-paper text-ink-500 shadow-soft sm:-left-[46px]">
+                  <IconRenderer name={milestone.icon} className="h-4 w-4" />
                 </div>
-
-                {/* Content */}
-                <div className="flex-1 pt-3">
-                  <h3 className="text-sm font-semibold text-zinc-900">
-                    {milestone.title}
-                  </h3>
-                  <p className="mt-1 text-sm text-zinc-500">
-                    {milestone.description}
-                  </p>
-                  <span className="mt-2 inline-block rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-700">
-                    {milestone.duration}
-                  </span>
-                </div>
-              </div>
+                <h3 className="font-display text-base font-semibold text-ink">
+                  {milestone.title}
+                </h3>
+                <p className="mt-1 text-sm leading-relaxed text-ink-500">
+                  {milestone.description}
+                </p>
+                <span className="mt-2 inline-flex items-center rounded-full border border-brass-300/50 bg-brass-50 px-2.5 py-0.5 text-[0.65rem] font-semibold uppercase tracking-wider text-brass-600">
+                  {milestone.duration}
+                </span>
+              </li>
             ))}
-          </div>
+          </ol>
         </div>
       </div>
     </div>

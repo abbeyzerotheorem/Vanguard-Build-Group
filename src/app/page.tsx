@@ -1,4 +1,5 @@
 import { constructionConfig } from "@/data/construction";
+import Header from "@/components/Header";
 import SafetyBanner from "@/sections/SafetyBanner";
 import HeroSection from "@/sections/HeroSection";
 import MetricsBoard from "@/sections/MetricsBoard";
@@ -18,6 +19,7 @@ export default function HomePage() {
 
   return (
     <>
+      <Header />
       {promotional.bannerVisible && <SafetyBanner />}
 
       <main>

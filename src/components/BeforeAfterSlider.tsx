@@ -1,7 +1,15 @@
-'use client';
+"use client";
 
-import { useRef, useState, useCallback, type MouseEvent, type TouchEvent } from 'react';
-import { cn } from '@/lib/utils';
+import {
+  useRef,
+  useState,
+  useCallback,
+  type MouseEvent,
+  type TouchEvent,
+  type KeyboardEvent,
+} from "react";
+import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 interface BeforeAfterSliderProps {
   imageBefore: string;
@@ -19,43 +27,41 @@ export default function BeforeAfterSlider({
   const containerRef = useRef<HTMLDivElement>(null);
   const [sliderPos, setSliderPos] = useState(50);
   const [isDragging, setIsDragging] = useState(false);
+  const [loaded, setLoaded] = useState(false);
 
   const updatePosition = useCallback((clientX: number) => {
     const container = containerRef.current;
     if (!container) return;
     const rect = container.getBoundingClientRect();
-    let x = ((clientX - rect.left) / rect.width) * 100;
-    x = Math.max(0, Math.min(100, x));
-    setSliderPos(x);
+    const x = ((clientX - rect.left) / rect.width) * 100;
+    setSliderPos(Math.max(0, Math.min(100, x)));
   }, []);
 
-  const handleMouseDown = useCallback(
+  const handlePointerDown = useCallback(
     (e: MouseEvent<HTMLDivElement>) => {
       e.preventDefault();
       setIsDragging(true);
       updatePosition(e.clientX);
     },
-    [updatePosition]
+    [updatePosition],
   );
 
-  const handleMouseMove = useCallback(
+  const handlePointerMove = useCallback(
     (e: MouseEvent<HTMLDivElement>) => {
       if (!isDragging) return;
       updatePosition(e.clientX);
     },
-    [isDragging, updatePosition]
+    [isDragging, updatePosition],
   );
 
-  const handleMouseUp = useCallback(() => {
-    setIsDragging(false);
-  }, []);
+  const handlePointerUp = useCallback(() => setIsDragging(false), []);
 
   const handleTouchStart = useCallback(
     (e: TouchEvent<HTMLDivElement>) => {
       setIsDragging(true);
       updatePosition(e.touches[0].clientX);
     },
-    [updatePosition]
+    [updatePosition],
   );
 
   const handleTouchMove = useCallback(
@@ -63,89 +69,123 @@ export default function BeforeAfterSlider({
       if (!isDragging) return;
       updatePosition(e.touches[0].clientX);
     },
-    [isDragging, updatePosition]
+    [isDragging, updatePosition],
   );
 
-  const handleTouchEnd = useCallback(() => {
-    setIsDragging(false);
+  const handleTouchEnd = useCallback(() => setIsDragging(false), []);
+
+  const handleKey = useCallback((e: KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === "ArrowRight" || e.key === "ArrowUp") {
+      e.preventDefault();
+      setSliderPos((p) => Math.min(100, p + 2));
+    } else if (e.key === "ArrowLeft" || e.key === "ArrowDown") {
+      e.preventDefault();
+      setSliderPos((p) => Math.max(0, p - 2));
+    } else if (e.key === "Home") {
+      e.preventDefault();
+      setSliderPos(0);
+    } else if (e.key === "End") {
+      e.preventDefault();
+      setSliderPos(100);
+    }
   }, []);
 
   return (
-    <div className={cn('w-full', className)}>
+    <div className={cn("w-full", className)}>
       {title && (
-        <h3 className="mb-3 text-lg font-semibold text-zinc-900">{title}</h3>
+        <h3 className="mb-3 font-display text-lg font-semibold text-ink">
+          {title}
+        </h3>
       )}
       <div
         ref={containerRef}
-        className="relative aspect-[4/3] w-full cursor-ew-resize overflow-hidden rounded-xl border border-zinc-200 bg-zinc-100 select-none"
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
+        className="relative aspect-[4/3] w-full cursor-ew-resize select-none overflow-hidden rounded-2xl border border-border bg-bone-100"
+        onMouseDown={handlePointerDown}
+        onMouseMove={handlePointerMove}
+        onMouseUp={handlePointerUp}
+        onMouseLeave={handlePointerUp}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
         role="slider"
-        aria-label="Before and after comparison slider"
+        aria-label="Before and after comparison"
         aria-valuemin={0}
         aria-valuemax={100}
         aria-valuenow={Math.round(sliderPos)}
+        aria-valuetext={`${Math.round(sliderPos)}% revealing the after image`}
         tabIndex={0}
-        onKeyDown={(e) => {
-          if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
-            setSliderPos((prev) => Math.min(100, prev + 2));
-          } else if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') {
-            setSliderPos((prev) => Math.max(0, prev - 2));
-          }
-        }}
+        onKeyDown={handleKey}
       >
+        {/* Skeleton while loading */}
+        {!loaded && (
+          <div
+            className="absolute inset-0 animate-pulse bg-gradient-to-r from-bone-200 via-bone-100 to-bone-200"
+            style={{ backgroundSize: "200% 100%" }}
+            aria-hidden="true"
+          />
+        )}
+
         {/* After image (base layer) */}
         <img
           src={imageAfter}
-          alt="After"
+          alt="After construction"
           className="pointer-events-none absolute inset-0 h-full w-full object-cover"
           draggable={false}
+          onLoad={() => setLoaded(true)}
         />
 
         {/* Before image (clipped layer) */}
         <div
-          className="pointer-events-none absolute inset-0 h-full w-full overflow-hidden"
+          className="pointer-events-none absolute inset-y-0 left-0 overflow-hidden"
           style={{ width: `${sliderPos}%` }}
         >
           <img
             src={imageBefore}
-            alt="Before"
-            className="pointer-events-none absolute inset-0 h-full w-full object-cover"
-            style={{ width: `${100 / (sliderPos / 100)}%` }}
+            alt="Before construction"
+            className="pointer-events-none absolute inset-0 h-full object-cover"
+            style={{ width: `${100 / (Math.max(sliderPos, 0.01) / 100)}%` }}
             draggable={false}
           />
         </div>
 
         {/* Slider handle */}
-        <div
-          className="absolute top-0 bottom-0 z-10 w-1 -translate-x-1/2 cursor-ew-resize bg-white shadow-md"
+        <motion.div
+          className="absolute top-0 bottom-0 z-10 w-0.5 -translate-x-1/2 bg-bone-50 shadow-structural"
           style={{ left: `${sliderPos}%` }}
+          aria-hidden="true"
+          animate={{ scale: isDragging ? 1.05 : 1 }}
+          transition={{ type: "spring", stiffness: 300, damping: 22 }}
         >
-          <div className="absolute top-1/2 left-1/2 flex h-12 w-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 border-white bg-amber-600 shadow-lg transition-transform active:scale-95">
+          <div
+            className={cn(
+              "absolute top-1/2 left-1/2 flex h-12 w-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 border-bone-50 bg-brass-500 text-bone-50 shadow-brass transition-transform",
+              isDragging ? "scale-95" : "hover:scale-105",
+            )}
+          >
             <svg
-              className="h-5 w-5 text-white"
+              className="h-5 w-5"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
               strokeWidth={2.5}
+              aria-hidden="true"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M8 7l-4 5 4 5M16 7l4 5-4 5" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M8 7l-4 5 4 5M16 7l4 5-4 5"
+              />
             </svg>
           </div>
-        </div>
+        </motion.div>
 
         {/* Labels */}
-        <span className="pointer-events-none absolute bottom-3 left-3 rounded-md bg-black/60 px-2 py-1 text-xs font-medium text-white">
+        <div className="pointer-events-none absolute bottom-3 left-3 rounded-md bg-ink/80 px-2.5 py-1 text-[0.65rem] font-semibold uppercase tracking-widest text-bone-50 backdrop-blur">
           Before
-        </span>
-        <span className="pointer-events-none absolute bottom-3 right-3 rounded-md bg-black/60 px-2 py-1 text-xs font-medium text-white">
+        </div>
+        <div className="pointer-events-none absolute bottom-3 right-3 rounded-md bg-ink/80 px-2.5 py-1 text-[0.65rem] font-semibold uppercase tracking-widest text-bone-50 backdrop-blur">
           After
-        </span>
+        </div>
       </div>
     </div>
   );

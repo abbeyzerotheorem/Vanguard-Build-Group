@@ -141,8 +141,8 @@ export const constructionConfig: ConstructionConfig = {
       testimonialExcerpt:
         "Vanguard delivered our penthouse three weeks ahead of schedule and under budget. The attention to structural detail is extraordinary.",
       clientName: "Michael & Sarah Denoon",
-      imageBefore: "/images/portfolio/sandton-before.jpg",
-      imageAfter: "/images/portfolio/sandton-after.jpg",
+      imageBefore: "/before.jpeg",
+      imageAfter: "/after.jpeg",
       tags: ["Luxury Residence", "High-Rise", "Steel Frame", "Smart Home"],
       budgetRange: "R8.5M – R9.2M",
       timelineMonths: 14,
@@ -156,8 +156,8 @@ export const constructionConfig: ConstructionConfig = {
       testimonialExcerpt:
         "A 12 000 m² precinct delivered in 17 months with zero safety incidents. Vanguard's project management is world-class.",
       clientName: "Atterbury Property Group",
-      imageBefore: "/images/portfolio/centurion-before.jpg",
-      imageAfter: "/images/portfolio/centurion-after.jpg",
+      imageBefore: "/CenturionOfficePark.jpeg",
+      imageAfter: "/CenturionOfficePark.jpeg",
       tags: ["Office Park", "Green Building", "Steel Frame", "5-Star Rating"],
       budgetRange: "R120M – R135M",
       timelineMonths: 17,
@@ -171,8 +171,8 @@ export const constructionConfig: ConstructionConfig = {
       testimonialExcerpt:
         "Our coastal home required specialised salt-air corrosion protection. Vanguard engineered every specification with precision.",
       clientName: "David & Lisa Marais",
-      imageBefore: "/images/portfolio/umhlanga-before.jpg",
-      imageAfter: "/images/portfolio/umhlanga-after.jpg",
+      imageBefore: "/UmhlangaRidge.jpeg",
+      imageAfter: "/UmhlangaRidge.jpeg",
       tags: ["Coastal Residence", "Smart Home", "Reinforced Concrete", "Green Roof"],
       budgetRange: "R6.2M – R7.0M",
       timelineMonths: 12,
@@ -186,8 +186,8 @@ export const constructionConfig: ConstructionConfig = {
       testimonialExcerpt:
         "Vanguard built three new classroom blocks, a 600-seat hall, and sports facilities within a tight 11-month deadline.",
       clientName: "Stirling Primary School Board",
-      imageBefore: "/images/portfolio/stirling-before.jpg",
-      imageAfter: "/images/portfolio/stirling-after.jpg",
+      imageBefore: "/stirling.jpeg",
+      imageAfter: "/stirling.jpeg",
       tags: ["Education", "Community", "Steel Frame", "Multi-Phase"],
       budgetRange: "R45M – R52M",
       timelineMonths: 11,
@@ -201,8 +201,8 @@ export const constructionConfig: ConstructionConfig = {
       testimonialExcerpt:
         "Restoring a 1928 heritage property required specialist skills. Vanguard navigated SAHRA approvals and matched original craftsmanship.",
       clientName: "Dr. Pieter Venter",
-      imageBefore: "/images/portfolio/waterkloof-before.jpg",
-      imageAfter: "/images/portfolio/waterkloof-after.jpg",
+      imageBefore: "/waterkloof.jpeg",
+      imageAfter: "/waterkloof.jpeg",
       tags: ["Heritage", "Restoration", "Period Features", "Extension"],
       budgetRange: "R3.8M – R4.5M",
       timelineMonths: 10,
@@ -216,8 +216,8 @@ export const constructionConfig: ConstructionConfig = {
       testimonialExcerpt:
         "A 22 000 m² distribution centre with 16-meter clear heights, delivered in 14 months. Vanguard's coordination was exceptional.",
       clientName: "Imperial Logistics",
-      imageBefore: "/images/portfolio/midrand-before.jpg",
-      imageAfter: "/images/portfolio/midrand-after.jpg",
+      imageBefore: "/LogisticsDistribution.jpeg",
+      imageAfter: "/LogisticsDistribution.jpeg",
       tags: ["Industrial", "Warehouse", "Steel Portal Frame", "Logistics"],
       budgetRange: "R95M – R108M",
       timelineMonths: 14,
@@ -231,7 +231,7 @@ export const constructionConfig: ConstructionConfig = {
       role: "Founder & Managing Director",
       credentials: ["Pr.CM (SACPCMP)", "MBA (GIBS)", "CIDB 9GB/9CE"],
       bio: "Over 26 years leading flagship construction projects across Africa. J.D. founded Vanguard in 2000 with a single bakkie and a commitment to structural excellence.",
-      imageSrc: "/images/team/jd.jpg",
+      imageSrc: "/Merwe.jpeg",
     },
     {
       id: "susan-khumalo",
@@ -239,15 +239,15 @@ export const constructionConfig: ConstructionConfig = {
       role: "Director of Operations",
       credentials: ["Pr.Eng (ECSA)", "M.Sc. Structural Eng (Wits)", "PMP"],
       bio: "Susan oversees all project delivery, quality assurance, and safety compliance. She has directed over 500 000 m² of completed commercial and residential construction.",
-      imageSrc: "/images/team/susan.jpg",
+      imageSrc: "/susan.jpeg",
     },
     {
       id: "thabo-ntuli",
-      name: "Thabo Ntuli",
+      name: "Abiodun Aina",
       role: "Commercial Director",
       credentials: ["B.Com (Hons) UCT", "MCIOB", "MBA (Cum Laude)"],
       bio: "Thabo leads commercial strategy, supply chain optimisation, and client contract management. He ensures every project achieves target margin without compromising quality.",
-      imageSrc: "/images/team/thabo.jpg",
+      imageSrc: "/aina.jpeg",
     },
     {
       id: "amanda-coetzee",
@@ -255,7 +255,7 @@ export const constructionConfig: ConstructionConfig = {
       role: "Head of Design & Estimating",
       credentials: ["B.Arch (UP)", "SACAP Registered", "Green Star SA Accredited"],
       bio: "Amanda brings architectural precision to every estimate. Her detailed 3D-modelled quantity takeoffs have maintained Vanguard's 96% budget accuracy rate.",
-      imageSrc: "/images/team/amanda.jpg",
+      imageSrc: "/amanda.jpeg",
     },
   ],
 
@@ -475,10 +475,10 @@ export const constructionConfig: ConstructionConfig = {
 
   // ─── Social Links ─────────────────────────────────────────────────
   socialLinks: {
-    linkedin: "https://linkedin.com/company/vanguard-build-group",
-    facebook: "https://facebook.com/vanguardbuildgroup",
-    instagram: "https://instagram.com/vanguardbuildsa",
-    houzz: "https://houzz.co.za/pro/vanguardbuildgroup",
+    linkedin: "#",
+    facebook: "#",
+    instagram: "#",
+    houzz: "#",
   },
 
   // ─── Promotional State ────────────────────────────────────────────
@@ -492,4 +492,180 @@ export const constructionConfig: ConstructionConfig = {
       { value: "26", label: "Years of Mastery", suffix: "+" },
     ],
   },
+
+  // ─── Navigation ─────────────────────────────────────────────────
+  navigation: {
+    primary: [
+      { label: "Services", href: "#services" },
+      { label: "Portfolio", href: "#portfolio" },
+      { label: "Process", href: "#milestones" },
+      { label: "Credentials", href: "#trust" },
+      { label: "FAQ", href: "#faq" },
+    ],
+    utility: [
+      { label: "About", href: "#about" },
+      { label: "Contact", href: "#footer" },
+    ],
+  },
+
+  // ─── Estimate Builder Selections ─────────────────────────────────
+  estimate: {
+    projectTypes: [
+      {
+        value: "residential",
+        label: "Residential Construction",
+        description: "Custom homes, estates, multi-unit developments",
+      },
+      {
+        value: "commercial",
+        label: "Commercial Construction",
+        description: "Offices, retail, hospitality, mixed-use precincts",
+      },
+      {
+        value: "institutional",
+        label: "Institutional / Public",
+        description: "Schools, clinics, civic facilities",
+      },
+      {
+        value: "renovation",
+        label: "Renovation & Remodeling",
+        description: "Heritage restoration, vertical extensions, fit-outs",
+      },
+      {
+        value: "infrastructure",
+        label: "Infrastructure & Civil",
+        description: "Warehousing, logistics, civil engineering works",
+      },
+    ],
+    projectSizes: [
+      { value: "small", label: "Small", description: "Under 500 m²" },
+      { value: "medium", label: "Medium", description: "500 – 2 000 m²" },
+      { value: "large", label: "Large", description: "2 000 – 10 000 m²" },
+      { value: "xlarge", label: "Extra Large", description: "10 000 m² and up" },
+    ],
+    budgetRanges: [
+      {
+        value: "under500k",
+        label: "Under R500,000",
+        description: "Renovations & specialist scopes",
+      },
+      {
+        value: "500k-2m",
+        label: "R500,000 – R2M",
+        description: "Boutique residential & small commercial",
+      },
+      {
+        value: "2m-10m",
+        label: "R2M – R10M",
+        description: "Custom homes, fit-outs, mid-scale commercial",
+      },
+      {
+        value: "10m-50m",
+        label: "R10M – R50M",
+        description: "Premium estates, office precincts",
+      },
+      {
+        value: "over50m",
+        label: "Over R50M",
+        description: "Mixed-use, institutional, large industrial",
+      },
+    ],
+    timelineOptions: [
+      { value: "asap", label: "As soon as possible" },
+      { value: "1-3months", label: "1 – 3 months" },
+      { value: "3-6months", label: "3 – 6 months" },
+      { value: "6-12months", label: "6 – 12 months" },
+      { value: "planning", label: "Still planning" },
+    ],
+  },
+
+  // ─── Estimate Math Tiers ─────────────────────────────────────────
+  // Each tier has a min/max rand envelope. The calculator picks a tier
+  // from (project type × project size) and animates a live total.
+  estimateTiers: [
+    {
+      id: "residential-small",
+      label: "Boutique residential build",
+      min: 1_500_000,
+      max: 3_200_000,
+      months: { small: 6, medium: 9, large: 12, xlarge: 16 },
+    },
+    {
+      id: "residential-medium",
+      label: "Custom family home",
+      min: 3_500_000,
+      max: 8_500_000,
+      months: { small: 8, medium: 12, large: 16, xlarge: 22 },
+    },
+    {
+      id: "residential-large",
+      label: "Luxury estate or multi-residence",
+      min: 9_000_000,
+      max: 22_000_000,
+      months: { small: 10, medium: 14, large: 18, xlarge: 24 },
+    },
+    {
+      id: "commercial-small",
+      label: "Commercial fit-out",
+      min: 1_200_000,
+      max: 4_500_000,
+      months: { small: 4, medium: 7, large: 10, xlarge: 14 },
+    },
+    {
+      id: "commercial-medium",
+      label: "Office or retail precinct",
+      min: 5_000_000,
+      max: 28_000_000,
+      months: { small: 6, medium: 10, large: 14, xlarge: 20 },
+    },
+    {
+      id: "commercial-large",
+      label: "Large commercial development",
+      min: 30_000_000,
+      max: 130_000_000,
+      months: { small: 9, medium: 14, large: 20, xlarge: 28 },
+    },
+    {
+      id: "institutional-small",
+      label: "Boutique institutional facility",
+      min: 4_000_000,
+      max: 12_000_000,
+      months: { small: 8, medium: 12, large: 16, xlarge: 20 },
+    },
+    {
+      id: "institutional-large",
+      label: "Major institutional project",
+      min: 18_000_000,
+      max: 75_000_000,
+      months: { small: 10, medium: 14, large: 18, xlarge: 24 },
+    },
+    {
+      id: "renovation-small",
+      label: "Boutique renovation",
+      min: 450_000,
+      max: 1_500_000,
+      months: { small: 3, medium: 5, large: 8, xlarge: 12 },
+    },
+    {
+      id: "renovation-large",
+      label: "Major structural renovation",
+      min: 1_800_000,
+      max: 6_500_000,
+      months: { small: 5, medium: 8, large: 12, xlarge: 18 },
+    },
+    {
+      id: "infrastructure-medium",
+      label: "Industrial / civil works",
+      min: 8_000_000,
+      max: 45_000_000,
+      months: { small: 6, medium: 10, large: 16, xlarge: 22 },
+    },
+    {
+      id: "infrastructure-large",
+      label: "Major infrastructure",
+      min: 50_000_000,
+      max: 180_000_000,
+      months: { small: 10, medium: 16, large: 22, xlarge: 30 },
+    },
+  ],
 };

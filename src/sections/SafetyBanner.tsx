@@ -1,54 +1,52 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useRef } from 'react';
-import { X } from 'lucide-react';
-import { constructionConfig } from '@/data/construction';
-import { cn } from '@/lib/utils';
+import { useEffect, useState } from "react";
+import { X } from "lucide-react";
+import { constructionConfig } from "@/data/construction";
 
 export default function SafetyBanner() {
   const [visible, setVisible] = useState(true);
   const [mounted, setMounted] = useState(false);
-  const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  if (!mounted || !visible || !constructionConfig.promotional.bannerVisible) {
+  if (
+    !mounted ||
+    !visible ||
+    !constructionConfig.promotional.bannerVisible
+  ) {
     return null;
   }
 
   const { bannerMessage } = constructionConfig.promotional;
+  // Duplicate for seamless marquee loop
+  const marqueeText = `${bannerMessage}  •  ${bannerMessage}  •  `;
 
   return (
     <div
       role="banner"
       aria-label="Licensing and credentials notice"
-      className="relative bg-structural-blue text-white"
+      className="relative z-30 overflow-hidden border-b border-bone-50/10 bg-ink text-bone-50"
     >
-      {/* Mobile: scrollable text container */}
-      <div className="flex items-center lg:justify-center overflow-hidden">
-        <div
-          ref={scrollRef}
-          className="flex-1 overflow-x-auto whitespace-nowrap py-2 px-4 scrollbar-hide lg:overflow-visible lg:whitespace-normal lg:text-center lg:px-12"
-          style={{
-            scrollbarWidth: 'none',
-            msOverflowStyle: 'none',
-          }}
-        >
-          <span className="inline-block text-xs sm:text-sm font-body font-medium tracking-wide">
-            {bannerMessage}
-          </span>
+      <div className="flex items-center">
+        <div className="relative flex-1 overflow-hidden">
+          <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-12 bg-gradient-to-r from-ink to-transparent" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-12 bg-gradient-to-l from-ink to-transparent" />
+          <div className="flex w-max animate-marquee whitespace-nowrap py-2.5 will-change-transform">
+            <span className="px-6 font-mono text-[0.7rem] uppercase tracking-[0.22em] text-bone-50/75">
+              {marqueeText}
+            </span>
+          </div>
         </div>
-
-        {/* Dismiss button */}
         <button
           type="button"
           onClick={() => setVisible(false)}
-          className="flex-shrink-0 flex items-center justify-center w-12 h-12 text-white/80 hover:text-white transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-accent"
+          className="flex h-11 w-11 shrink-0 items-center justify-center text-bone-50/70 transition-colors hover:text-brass-300"
           aria-label="Dismiss banner"
         >
-          <X className="w-4 h-4" aria-hidden="true" />
+          <X className="h-4 w-4" aria-hidden="true" />
         </button>
       </div>
     </div>

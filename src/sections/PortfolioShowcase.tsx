@@ -1,31 +1,173 @@
-'use client';
+"use client";
 
-import { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { constructionConfig } from '@/data/construction';
-import { cn } from '@/lib/utils';
-import BeforeAfterSlider from '@/components/BeforeAfterSlider';
-import type { PortfolioItem } from '@/types';
+import { useMemo, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowUpRight } from "lucide-react";
+import { constructionConfig } from "@/data/construction";
+import { cn, formatCurrency } from "@/lib/utils";
+import BeforeAfterSlider from "@/components/BeforeAfterSlider";
+import type { PortfolioItem } from "@/types";
 
-const categories = ['All', 'Residential', 'Commercial', 'Institutional'] as const;
+const categories = ["All", "Residential", "Commercial", "Institutional"] as const;
+type Category = (typeof categories)[number];
 
 const cardVariants = {
   hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: 'easeOut' } },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] as const } },
 };
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { staggerChildren: 0.07 } },
+};
+
+function ProjectCard({ item }: { item: PortfolioItem }) {
+  return (
+    <motion.article
+      variants={cardVariants}
+      className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-paper transition-all duration-500 ease-out-quint hover:-translate-y-1 hover:border-brass-300/60 hover:shadow-structural-lg"
+    >
+      {/* Image preview with editorial aspect */}
+      <div className="aspect-container aspect-[4/3] bg-bone-100">
+        <div
+          className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out-quint group-hover:scale-[1.04]"
+          style={{
+            backgroundImage: `linear-gradient(180deg, rgba(14,17,22,0) 50%, rgba(14,17,22,0.55) 100%), url('${item.imageAfter}')`,
+          }}
+          role="img"
+          aria-label={item.title}
+        />
+        <div className="absolute left-4 top-4 flex flex-wrap gap-2">
+          <span className="tag-pill-accent">{item.category}</span>
+          <span className="rounded-full border border-bone-50/30 bg-ink/40 px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-wider text-bone-50 backdrop-blur">
+            {item.completedYear}
+          </span>
+        </div>
+        <div className="absolute bottom-4 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-bone-50 text-ink opacity-0 transition-all duration-500 group-hover:opacity-100">
+          <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+        </div>
+      </div>
+
+      {/* Card body */}
+      <div className="flex flex-1 flex-col p-6">
+        <h3 className="font-display text-lg sm:text-xl font-bold text-ink">
+          {item.title}
+        </h3>
+        <p className="mt-1 text-sm text-ink-500">{item.location}</p>
+
+        <div className="mt-5 flex flex-wrap gap-1.5">
+          {item.tags.slice(0, 3).map((tag) => (
+            <span key={tag} className="tag-pill text-[0.65rem]">
+              {tag}
+            </span>
+          ))}
+          {item.tags.length > 3 && (
+            <span className="tag-pill text-[0.65rem]">+{item.tags.length - 3}</span>
+          )}
+        </div>
+
+        <div className="mt-auto flex items-center justify-between gap-4 border-t border-border pt-4 text-sm">
+          <span className="text-ink-500">
+            <span className="font-mono text-[0.65rem] uppercase tracking-widest text-ink-400">
+              Budget
+            </span>
+            <br />
+            <span className="font-semibold text-ink">{item.budgetRange}</span>
+          </span>
+          <span className="text-right text-ink-500">
+            <span className="font-mono text-[0.65rem] uppercase tracking-widest text-ink-400">
+              Timeline
+            </span>
+            <br />
+            <span className="font-semibold text-ink">
+              {item.timelineMonths} months
+            </span>
+          </span>
+        </div>
+      </div>
+    </motion.article>
+  );
+}
+
+function FeaturedCard({ item }: { item: PortfolioItem }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+      className="mb-14 overflow-hidden rounded-3xl border border-border bg-paper shadow-structural lg:mb-20"
+    >
+      <div className="grid grid-cols-1 lg:grid-cols-5">
+        {/* Before/After slider */}
+        <div className="relative lg:col-span-3">
+          <div className="aspect-[4/3] lg:aspect-auto lg:min-h-[520px]">
+            <BeforeAfterSlider
+              imageBefore={item.imageBefore}
+              imageAfter={item.imageAfter}
+              title={item.title}
+            />
+          </div>
+        </div>
+
+        {/* Featured info panel */}
+        <div className="flex flex-col justify-center gap-5 p-7 sm:p-10 lg:col-span-2 lg:p-12">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="tag-pill-accent">{item.category}</span>
+            <span className="tag-pill">Completed {item.completedYear}</span>
+          </div>
+
+          <div>
+            <p className="numeric-mark text-brass-500">/ Featured</p>
+            <h3 className="mt-2 text-display-xs sm:text-display-sm font-display font-bold text-ink">
+              {item.title}
+            </h3>
+            <p className="mt-2 text-sm text-ink-500">{item.location}</p>
+          </div>
+
+          <blockquote className="border-l-2 border-brass-400 pl-4 text-sm italic text-ink-700">
+            &ldquo;{item.testimonialExcerpt}&rdquo;
+            <span className="mt-1 block text-xs font-semibold not-italic text-ink">
+              — {item.clientName}
+            </span>
+          </blockquote>
+
+          <div className="flex flex-wrap gap-1.5">
+            {item.tags.map((tag) => (
+              <span key={tag} className="tag-pill text-[0.65rem]">
+                {tag}
+              </span>
+            ))}
+          </div>
+
+          <div className="mt-2 grid grid-cols-2 gap-4 border-t border-border pt-5 text-sm">
+            <div>
+              <p className="numeric-mark text-ink-400">Budget</p>
+              <p className="mt-1 font-semibold text-ink">
+                {item.budgetRange}
+              </p>
+            </div>
+            <div>
+              <p className="numeric-mark text-ink-400">Timeline</p>
+              <p className="mt-1 font-semibold text-ink">
+                {item.timelineMonths} months
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
 
 export default function PortfolioShowcase() {
   const { portfolio } = constructionConfig;
-  const [activeCategory, setActiveCategory] = useState<string>('All');
+  const [activeCategory, setActiveCategory] = useState<Category>("All");
 
   const filteredPortfolio = useMemo(() => {
-    if (activeCategory === 'All') return portfolio;
-    return portfolio.filter(
-      (item) => item.category === activeCategory
-    );
+    if (activeCategory === "All") return portfolio;
+    return portfolio.filter((item) => item.category === activeCategory);
   }, [activeCategory, portfolio]);
 
-  // Featured item (first in filtered list) gets the before/after slider
   const featured = filteredPortfolio[0];
   const rest = filteredPortfolio.slice(1);
 
@@ -33,169 +175,78 @@ export default function PortfolioShowcase() {
     <section
       id="portfolio"
       aria-label="Portfolio showcase"
-      className="section-padding bg-white"
+      className="section-padding bg-bone-100/40"
     >
       <div className="container-site">
-        {/* Section Header */}
-        <div className="text-center mb-10 sm:mb-14">
-          <h2 className="section-title">Our Portfolio</h2>
-          <p className="section-subtitle mx-auto">
-            From conception to completion — explore the structures that define us.
-          </p>
+        {/* Section header */}
+        <div className="mb-12 flex flex-col items-start justify-between gap-6 sm:mb-16 sm:flex-row sm:items-end">
+          <div className="max-w-2xl">
+            <p className="eyebrow">/ 04 — Portfolio</p>
+            <h2 className="mt-3 section-title">Selected works</h2>
+            <p className="mt-4 text-base sm:text-lg text-ink-500">
+              From conception to completion — explore the structures that
+              define us.
+            </p>
+          </div>
         </div>
 
-        {/* Filter Buttons */}
+        {/* Filter buttons */}
         <div
-          className="flex flex-wrap items-center justify-center gap-3 mb-12"
+          className="mb-12 flex flex-wrap items-center gap-2 sm:gap-3"
           role="tablist"
           aria-label="Filter by category"
         >
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              role="tab"
-              aria-selected={activeCategory === cat}
-              onClick={() => setActiveCategory(cat)}
-              className={cn(
-                'rounded-full px-5 py-2.5 text-sm font-semibold transition-all duration-200',
-                'min-h-[48px] min-w-[48px]',
-                activeCategory === cat
-                  ? 'bg-accent text-white shadow-structural-lg'
-                  : 'bg-background text-structural-slate border border-border hover:border-accent/50 hover:text-accent'
-              )}
-            >
-              {cat}
-            </button>
-          ))}
+          {categories.map((cat) => {
+            const isActive = activeCategory === cat;
+            return (
+              <button
+                key={cat}
+                role="tab"
+                aria-selected={isActive}
+                onClick={() => setActiveCategory(cat)}
+                className={cn(
+                  "rounded-full border px-5 py-2.5 text-sm font-semibold transition-all duration-300",
+                  isActive
+                    ? "border-ink bg-ink text-bone-50 shadow-structural"
+                    : "border-border bg-paper text-ink-500 hover:border-ink hover:text-ink",
+                )}
+                style={{ minHeight: 48 }}
+              >
+                {cat}
+              </button>
+            );
+          })}
         </div>
 
-        {/* Featured Item with Before/After Slider */}
-        {featured && (
-          <div className="mb-12">
-            <div className="card-hover overflow-hidden rounded-xl">
-              <div className="grid grid-cols-1 lg:grid-cols-5">
-                {/* Before/After Slider */}
-                <div className="lg:col-span-3 relative min-h-[320px]">
-                  <BeforeAfterSlider
-                    imageBefore={featured.imageBefore}
-                    imageAfter={featured.imageAfter}
-                    title={featured.title}
-                  />
-                </div>
-
-                {/* Featured Info Panel */}
-                <div className="lg:col-span-2 p-6 sm:p-8 flex flex-col justify-center bg-white">
-                  <div className="flex flex-wrap gap-2 mb-3">
-                    <span className="tag-pill bg-accent/10 text-accent border-accent/20">
-                      {featured.category}
-                    </span>
-                    <span className="tag-pill">{featured.completedYear}</span>
-                  </div>
-
-                  <h3 className="text-display-xs font-display font-bold text-foreground mb-2">
-                    {featured.title}
-                  </h3>
-
-                  <p className="text-sm text-structural-slate mb-4">
-                    {featured.location}
-                  </p>
-
-                  <p className="text-sm text-structural-gray italic border-l-2 border-accent/40 pl-4 mb-4">
-                    &ldquo;{featured.testimonialExcerpt}&rdquo;
-                    <span className="block mt-1 not-italic text-xs font-semibold text-foreground">
-                      — {featured.clientName}
-                    </span>
-                  </p>
-                  <div className="flex flex-wrap gap-2 mt-auto">
-                    {featured.tags.map((tag) => (
-                      <span key={tag} className="tag-pill">
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-
-                  <div className="mt-4 pt-4 border-t border-border flex items-center justify-between text-sm">
-                    <span className="text-structural-slate">
-                      <span className="font-semibold text-foreground">Budget:</span>{' '}
-                      {featured.budgetRange}
-                    </span>
-                    <span className="text-structural-slate">
-                      <span className="font-semibold text-foreground">Timeline:</span>{' '}
-                      {featured.timelineMonths} months
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-        {/* Rest of Portfolio Grid */}
+        {/* Featured item with before/after */}
         <AnimatePresence mode="wait">
-          <motion.div
-            key={activeCategory}
-            initial="hidden"
-            animate="visible"
-            exit="hidden"
-            variants={{
-              hidden: { opacity: 0 },
-              visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
-            }}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
-          >
-            {rest.map((item) => (
-              <motion.div
-                key={item.id}
-                variants={cardVariants}
-                className="card-hover overflow-hidden group"
-              >
-                {/* Image Preview */}
-                <div className="aspect-container aspect-[4/3] bg-structural-slate/10">
-                  <img
-                    src={item.imageAfter}
-                    alt={item.title}
-                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    loading="lazy"
-                  />
-                  {/* Hover overlay */}
-                  <div className="absolute inset-0 bg-structural-blue/0 group-hover:bg-structural-blue/20 transition-colors duration-300" />
-                </div>
-
-                {/* Card Content */}
-                <div className="p-5">
-                  <div className="flex flex-wrap gap-2 mb-3">
-                    <span className="tag-pill bg-accent/10 text-accent border-accent/20">
-                      {item.category}
-                    </span>
-                  </div>
-
-                  <h3 className="text-lg font-display font-bold text-foreground mb-1">
-                    {item.title}
-                  </h3>
-
-                  <p className="text-sm text-structural-slate mb-3">{item.location}</p>
-
-                  <div className="flex flex-wrap gap-1.5">
-                    {item.tags.slice(0, 3).map((tag) => (
-                      <span key={tag} className="tag-pill text-[10px]">
-                        {tag}
-                      </span>
-                    ))}
-                    {item.tags.length > 3 && (
-                      <span className="tag-pill text-[10px] text-structural-gray">
-                        +{item.tags.length - 3}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
+          {featured ? (
+            <FeaturedCard key={featured.id} item={featured} />
+          ) : null}
         </AnimatePresence>
 
-        {/* Empty State */}
+        {/* Rest of portfolio grid */}
+        {rest.length > 0 ? (
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeCategory}
+              initial="hidden"
+              animate="visible"
+              exit={{ opacity: 0, transition: { duration: 0.2 } }}
+              variants={containerVariants}
+              className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+            >
+              {rest.map((item) => (
+                <ProjectCard key={item.id} item={item} />
+              ))}
+            </motion.div>
+          </AnimatePresence>
+        ) : null}
+
+        {/* Empty state */}
         {filteredPortfolio.length === 0 && (
-          <div className="text-center py-16">
-            <p className="text-structural-gray text-lg">
+          <div className="py-16 text-center">
+            <p className="text-lg text-ink-500">
               No projects found in this category.
             </p>
           </div>
