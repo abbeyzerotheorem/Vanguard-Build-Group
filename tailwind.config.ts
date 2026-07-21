@@ -12,9 +12,9 @@ const config: Config = {
       colors: {
         // Editorial sand + ink palette. Warm, premium, never generic.
         bone: {
-          50: "#FBF7F1", // page background
-          100: "#F4ECDF", // soft sand
-          200: "#EADFC9",
+          50: "#FAF9F5", // alabaster page background
+          100: "#F0EDE6", // soft sand
+          200: "#E3DFD4",
           300: "#DAC9A8",
         },
         ink: {
@@ -48,7 +48,7 @@ const config: Config = {
           600: "#243E2C",
         },
         // Backward-compatible aliases so legacy class names don't break during refactor.
-        background: "#FBF7F1",
+        background: "#FAF9F5",
         foreground: "#0E1116",
         accent: {
           DEFAULT: "#B9872A",
@@ -60,7 +60,7 @@ const config: Config = {
           slate: "#2A2F37",
           gray: "#5C616B",
         },
-        border: "#E7DFCF",
+        border: "#E3DFD4",
         "border-dark": "#9C8F76",
       },
       fontFamily: {

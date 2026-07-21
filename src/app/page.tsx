@@ -24,6 +24,8 @@ export default function HomePage() {
 
       <main>
         <HeroSection />
+        {/* Ambient gradient bridge between dark hero and light sections */}
+        <div className="relative h-24 -mt-24 bg-gradient-to-b from-ink to-transparent pointer-events-none" aria-hidden="true" />
         <MetricsBoard />
         <PortfolioShowcase />
         <CoreServices />

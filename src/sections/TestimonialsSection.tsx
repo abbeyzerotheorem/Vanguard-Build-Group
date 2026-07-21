@@ -8,21 +8,23 @@ export default function TestimonialsSection() {
     <section
       id="testimonials"
       aria-label="Client testimonials"
-      className="section-padding bg-bone-100/40"
+      className="section-padding bg-paper"
     >
       <div className="container-site">
-        <div className="mb-12 flex flex-col items-start justify-between gap-6 sm:mb-16 sm:flex-row sm:items-end">
-          <div className="max-w-2xl">
-            <p className="eyebrow">/ 08 — Reputation</p>
-            <h2 className="mt-3 section-title">What our clients say</h2>
+        <div className="mx-auto max-w-4xl">
+          <div className="mb-12 text-center sm:mb-16">
+            <p className="eyebrow justify-center">/ 08 — Reputation</p>
+            <h2 className="mt-3 section-title text-balance">
+              What our clients say
+            </h2>
+            <p className="mt-5 mx-auto max-w-2xl text-base text-ink-500">
+              Real words from the homeowners, developers, and institutions who
+              trust us with their most important structures.
+            </p>
           </div>
-          <p className="max-w-md text-base text-ink-500">
-            Real words from the homeowners, developers, and institutions who
-            trust us with their most important structures.
-          </p>
-        </div>
 
-        <TestimonialsCarousel testimonials={testimonials} />
+          <TestimonialsCarousel testimonials={testimonials} />
+        </div>
       </div>
     </section>
   );

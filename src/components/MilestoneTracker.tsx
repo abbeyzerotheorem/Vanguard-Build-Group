@@ -11,109 +11,116 @@ interface MilestoneTrackerProps {
   className?: string;
 }
 
+// Group 6 milestones into 3 macro phases
+function groupIntoPhases(milestones: Milestone[]) {
+  const phases = [
+    { title: "Planning & Design", icon: "FileText", color: "brass" },
+    { title: "Construction & Execution", icon: "HardHat", color: "ink" },
+    { title: "Completion & Handover", icon: "Award", color: "brass" },
+  ];
+
+  const itemsPerPhase = Math.ceil(milestones.length / 3);
+  return phases.map((phase, idx) => ({
+    ...phase,
+    milestones: milestones.slice(idx * itemsPerPhase, (idx + 1) * itemsPerPhase),
+    phaseIndex: idx,
+  }));
+}
+
 export default function MilestoneTracker({
   milestones,
   className,
 }: MilestoneTrackerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const prefersReducedMotion = useReducedMotion();
+  const phases = groupIntoPhases(milestones);
 
-  // Scroll-driven line progress (desktop horizontal)
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ["start 80%", "end 20%"],
+    offset: ["start 70%", "end 20%"],
   });
-  const desktopLineWidth = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
-
-  // Mobile (vertical) — use same progress scaled to the height
-  const mobileLineHeight = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
+  const lineHeight = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
 
   return (
     <div ref={containerRef} className={cn("relative", className)}>
-      {/* Desktop: horizontal timeline */}
-      <div className="hidden lg:block">
-        <div className="relative">
-          {/* Background rail */}
-          <div
-            className="absolute left-0 right-0 top-[34px] h-px bg-border"
+      {/* Vertical timeline */}
+      <div className="relative pl-14 sm:pl-20">
+        {/* Background rail */}
+        <div
+          className="absolute bottom-4 left-6 top-4 w-0.5 bg-border sm:left-9"
+          aria-hidden="true"
+        />
+        {/* Animated progress line */}
+        {!prefersReducedMotion && (
+          <motion.div
+            className="absolute left-6 top-4 w-0.5 origin-top bg-brass-500 sm:left-9"
+            style={{ height: lineHeight }}
             aria-hidden="true"
           />
-          {/* Animated progress line */}
-          {!prefersReducedMotion && (
-            <motion.div
-              className="absolute left-0 top-[34px] h-px origin-left bg-brass-500"
-              style={{ width: desktopLineWidth }}
-              aria-hidden="true"
-            />
-          )}
+        )}
 
-          <ol className="relative grid grid-cols-7 gap-2">
-            {milestones.map((milestone, idx) => (
-              <li
-                key={milestone.id}
-                className="relative flex flex-col items-center text-center"
-              >
-                {/* Index + node */}
-                <span className="mb-3 font-mono text-[0.65rem] font-semibold uppercase tracking-widest text-ink-400">
-                  / {String(idx + 1).padStart(2, "0")}
-                </span>
-                <div className="flex h-[68px] w-[68px] items-center justify-center rounded-full border-2 border-border bg-paper text-ink-500 shadow-soft transition-all duration-500">
-                  <IconRenderer name={milestone.icon} className="h-7 w-7" />
-                </div>
-                <h3 className="mt-5 font-display text-sm font-semibold text-ink">
-                  {milestone.title}
+        <ol className="space-y-14">
+          {phases.map((phase, phaseIdx) => (
+            <li key={phase.title} className="relative">
+              {/* Phase node */}
+              <div className="absolute -left-14 top-0 z-10 flex h-12 w-12 items-center justify-center rounded-full border-2 border-brass-400 bg-paper text-brass-500 shadow-soft sm:-left-20 sm:h-16 sm:w-16">
+                <IconRenderer
+                  name={phase.icon}
+                  className="h-5 w-5 sm:h-6 sm:w-6"
+                />
+              </div>
+
+              {/* Phase number */}
+              <span className="absolute -left-[68px] top-4 font-mono text-[0.65rem] font-semibold uppercase tracking-widest text-ink-400 sm:-left-[96px]">
+                / {String(phase.phaseIndex + 1).padStart(2, "0")}
+              </span>
+
+              {/* Phase header */}
+              <div className="mb-6">
+                <h3 className="text-display-xs font-display font-bold text-ink">
+                  {phase.title}
                 </h3>
-                <p className="mt-1.5 text-xs leading-relaxed text-ink-500">
-                  {milestone.description}
-                </p>
-                <span className="mt-3 inline-flex items-center rounded-full border border-brass-300/50 bg-brass-50 px-2.5 py-0.5 text-[0.65rem] font-semibold uppercase tracking-wider text-brass-600">
-                  {milestone.duration}
-                </span>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </div>
+              </div>
 
-      {/* Mobile & tablet: vertical timeline */}
-      <div className="lg:hidden">
-        <div className="relative pl-12 sm:pl-16">
-          {/* Background rail */}
-          <div
-            className="absolute bottom-2 left-5 top-2 w-px bg-border sm:left-7"
-            aria-hidden="true"
-          />
-          {/* Animated progress line */}
-          {!prefersReducedMotion && (
-            <motion.div
-              className="absolute left-5 top-2 w-px origin-top bg-brass-500 sm:left-7"
-              style={{ height: mobileLineHeight }}
-              aria-hidden="true"
-            />
-          )}
+              {/* Sub-milestones within phase */}
+              <div className="space-y-5">
+                {phase.milestones.map((ms, msIdx) => (
+                  <div
+                    key={ms.id}
+                    className="group rounded-2xl border border-border bg-paper p-5 sm:p-6 transition-all duration-300 hover:border-brass-300/40 hover:shadow-structural-lg"
+                  >
+                    <div className="flex items-start gap-4">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brass-50 text-brass-500 transition-colors group-hover:bg-brass-500 group-hover:text-bone-50">
+                        <IconRenderer name={ms.icon} className="h-5 w-5" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono text-[0.6rem] font-semibold uppercase tracking-widest text-ink-400">
+                            Step {phase.phaseIndex * phase.milestones.length + msIdx + 1}
+                          </span>
+                          <span className="rounded-full border border-brass-300/40 bg-brass-50 px-2 py-0.5 text-[0.55rem] font-semibold uppercase tracking-wider text-brass-600">
+                            {ms.duration}
+                          </span>
+                        </div>
+                        <h4 className="mt-1 font-display text-base font-semibold text-ink">
+                          {ms.title}
+                        </h4>
+                        <p className="mt-1 text-sm leading-relaxed text-ink-500">
+                          {ms.description}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
 
-          <ol className="space-y-10">
-            {milestones.map((milestone, idx) => (
-              <li key={milestone.id} className="relative">
-                <span className="absolute -left-12 top-1 font-mono text-[0.65rem] font-semibold uppercase tracking-widest text-ink-400 sm:-left-16">
-                  / {String(idx + 1).padStart(2, "0")}
-                </span>
-                <div className="absolute -left-[34px] top-1 flex h-10 w-10 items-center justify-center rounded-full border-2 border-border bg-paper text-ink-500 shadow-soft sm:-left-[46px]">
-                  <IconRenderer name={milestone.icon} className="h-4 w-4" />
-                </div>
-                <h3 className="font-display text-base font-semibold text-ink">
-                  {milestone.title}
-                </h3>
-                <p className="mt-1 text-sm leading-relaxed text-ink-500">
-                  {milestone.description}
-                </p>
-                <span className="mt-2 inline-flex items-center rounded-full border border-brass-300/50 bg-brass-50 px-2.5 py-0.5 text-[0.65rem] font-semibold uppercase tracking-wider text-brass-600">
-                  {milestone.duration}
-                </span>
-              </li>
-            ))}
-          </ol>
-        </div>
+              {/* Phase connector arrow (not last) */}
+              {phaseIdx < phases.length - 1 && (
+                <div className="ml-5 mt-6 h-8 w-px bg-gradient-to-b from-brass-400/40 to-transparent sm:ml-8" aria-hidden="true" />
+              )}
+            </li>
+          ))}
+        </ol>
       </div>
     </div>
   );

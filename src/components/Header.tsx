@@ -66,7 +66,7 @@ export default function Header() {
     <>
       <header
         className={cn(
-          "fixed inset-x-0 top-0 z-50 transition-all duration-500 ease-out-quint",
+          "sticky top-0 z-50 transition-all duration-500 ease-out-quint",
           scrolled
             ? "border-b border-border bg-paper/85 backdrop-blur-xl py-2"
             : "border-b border-transparent bg-transparent py-4 lg:py-5",

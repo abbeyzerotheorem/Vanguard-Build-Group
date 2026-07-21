@@ -4,29 +4,33 @@
 
 @layer base {
   :root {
-    /* Editorial palette — warm bone + ink + brass */
-    --bone-50: #FBF7F1;
-    --bone-100: #F4ECDF;
-    --bone-200: #EADFC9;
+    /* Premium editorial palette — alabaster off-white + deep ink + refined brass */
+    --bone-50: #FAF9F5;
+    --bone-100: #F0EDE6;
+    --bone-200: #E3DFD4;
     --ink: #0E1116;
+    --ink-800: #1A1F26;
     --ink-700: #2A2F37;
+    --ink-600: #3B4049;
     --ink-500: #5C616B;
+    --ink-400: #8A8F99;
     --brass: #B9872A;
     --brass-light: #D9A93A;
     --brass-dark: #6F4D17;
-    --border: #E7DFCF;
+    --brass-400: #A87A2A;
+    --border: #E3DFD4;
     --border-strong: #C9BC9D;
 
     /* Legacy aliases (kept for any in-flight refactor) */
-    --background: #FBF7F1;
+    --background: #FAF9F5;
     --foreground: #0E1116;
     --accent: #B9872A;
     --accent-light: #D9A93A;
     --accent-dark: #6F4D17;
     --structural-blue: #0E1116;
     --structural-slate: #2A2F37;
-    --border-legacy: #E7DFCF;
-    --border-dark-legacy: #9C8F76;
+    --border-legacy: #E3DFD4;
+    --border-dark-legacy: #C9BC9D;
     --card-shadow: 0 1px 2px 0 rgb(14 17 22 / 0.04),
       0 2px 6px -2px rgb(14 17 22 / 0.06);
   }
@@ -266,6 +270,66 @@
   /* Editorial drop cap */
   .drop-cap::first-letter {
     @apply font-display text-5xl font-bold float-left mr-2 mt-1 leading-none text-brass-500;
+  }
+
+  /* Smooth section transition dividers — ambient gradient bridges between dark/light sections */
+  .divider-top-glow {
+    @apply relative;
+  }
+  .divider-top-glow::before {
+    content: "";
+    @apply pointer-events-none absolute inset-x-0 top-0 h-32 -translate-y-full bg-gradient-to-b from-transparent via-brass-500/5 to-transparent opacity-60;
+  }
+
+  .divider-bottom-glow {
+    @apply relative;
+  }
+  .divider-bottom-glow::before {
+    content: "";
+    @apply pointer-events-none absolute inset-x-0 bottom-0 h-32 translate-y-full bg-gradient-to-t from-transparent via-brass-500/5 to-transparent opacity-60;
+  }
+
+  /* Ambient section transition — soft brass-tinted glow between sections */
+  .section-transition-dark {
+    @apply relative;
+  }
+  .section-transition-dark::after {
+    content: "";
+    @apply pointer-events-none absolute inset-x-0 -bottom-16 h-24 bg-gradient-to-t from-ink/5 to-transparent;
+  }
+
+  .section-transition-light {
+    @apply relative;
+  }
+  .section-transition-light::after {
+    content: "";
+    @apply pointer-events-none absolute inset-x-0 -bottom-16 h-24 bg-gradient-to-t from-bone-50/80 to-transparent;
+  }
+
+  /* Glassmorphism utility for credential badges */
+  .glass-badge {
+    @apply border border-white/10 bg-white/5 backdrop-blur-md;
+  }
+
+  /* High-contrast team avatar container */
+  .team-avatar {
+    @apply relative overflow-hidden rounded-2xl transition-all duration-500 ease-out-quint;
+  }
+  .team-avatar:hover {
+    @apply shadow-structural-lg;
+  }
+  .team-avatar img {
+    @apply h-full w-full object-cover transition-transform duration-700 ease-out-quint;
+  }
+  .team-avatar:hover img {
+    transform: scale(1.04);
+  }
+  .team-avatar::after {
+    content: "";
+    @apply pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-inset ring-transparent transition-all duration-500;
+  }
+  .team-avatar:hover::after {
+    @apply ring-brass-400/50;
   }
 }
 

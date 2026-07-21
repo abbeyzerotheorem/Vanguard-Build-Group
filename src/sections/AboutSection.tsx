@@ -78,20 +78,22 @@ export default function AboutSection() {
                 className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-paper transition-all duration-500 ease-out-quint hover:-translate-y-1 hover:border-brass-300/60 hover:shadow-structural-lg"
               >
                 {/* Avatar / headshot */}
-                <div className="relative aspect-[4/5] overflow-hidden bg-bone-100">
+                <div className="team-avatar aspect-[4/5] bg-bone-100">
                   <div
-                    className="absolute inset-0 transition-transform duration-700 ease-out-quint group-hover:scale-105"
+                    className="absolute inset-0"
                     style={{
-                      backgroundImage: `linear-gradient(180deg, transparent 50%, rgba(14,17,22,0.7) 100%), url('${member.imageSrc}')`,
+                      backgroundImage: `linear-gradient(180deg, transparent 40%, rgba(14,17,22,0.65) 100%), url('${member.imageSrc}')`,
                       backgroundSize: "cover",
                       backgroundPosition: "center",
                     }}
                     role="img"
                     aria-label={member.name}
                   />
-                  <span className="absolute right-4 top-4 font-mono text-[0.65rem] font-semibold uppercase tracking-widest text-bone-50/80">
+                  <span className="absolute right-4 top-4 font-mono text-[0.65rem] font-semibold uppercase tracking-widest text-bone-50/90 drop-shadow-md">
                     / {String(idx + 1).padStart(2, "0")}
                   </span>
+                  {/* Brass overlay on hover */}
+                  <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-t from-brass-500/0 via-transparent to-transparent transition-all duration-500 group-hover:from-brass-500/20" aria-hidden="true" />
                 </div>
 
                 {/* Content */}

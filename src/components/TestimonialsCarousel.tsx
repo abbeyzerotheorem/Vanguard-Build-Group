@@ -12,9 +12,22 @@ interface TestimonialsCarouselProps {
   autoPlayInterval?: number;
 }
 
-function Avatar({ initials }: { initials: string }) {
+function Avatar({ initials, imageSrc }: { initials: string; imageSrc?: string }) {
+  if (imageSrc) {
+    return (
+      <div className="relative flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-brass-400/50 shadow-structural-lg transition-all duration-300 hover:border-brass-500 hover:shadow-brass">
+        <img
+          src={imageSrc}
+          alt={initials}
+          className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
+        />
+        <div className="pointer-events-none absolute inset-0 rounded-full ring-1 ring-inset ring-white/20" aria-hidden="true" />
+      </div>
+    );
+  }
+
   return (
-    <div className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-bone-50 bg-gradient-to-br from-brass-300 to-brass-500 font-display text-sm font-bold text-bone-50 shadow-structural">
+    <div className="relative flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-brass-300 to-brass-500 font-display text-sm font-bold text-bone-50 shadow-structural transition-all duration-300 hover:shadow-brass">
       {initials}
     </div>
   );
@@ -122,7 +135,7 @@ export default function TestimonialsCarousel({
             </blockquote>
 
             <figcaption className="mt-2 flex flex-wrap items-center gap-4 border-t border-border pt-6">
-              <Avatar initials={active.avatarInitials} />
+              <Avatar initials={active.avatarInitials} imageSrc={(active as any).imageSrc} />
               <div>
                 <p className="font-display text-base font-semibold text-ink">
                   {active.clientName}

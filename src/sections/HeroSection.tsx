@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight, MapPin, ShieldCheck, Star } from "lucide-react";
+import { ArrowRight, MapPin } from "lucide-react";
 import { constructionConfig } from "@/data/construction";
 
 const containerVariants = {
@@ -29,9 +29,9 @@ export default function HeroSection() {
     <section
       id="hero"
       aria-label="Hero"
-      className="relative isolate flex min-h-[100svh] items-end overflow-hidden bg-ink text-bone-50 lg:items-center"
+      className="relative isolate flex min-h-[100svh] items-center overflow-hidden bg-ink text-bone-50"
     >
-      {/* Background image (CSS gradient stand-in — no real asset means no LCP penalty) */}
+      {/* Background gradient */}
       <div
         className="absolute inset-0 -z-10"
         style={{
@@ -49,7 +49,7 @@ export default function HeroSection() {
 
       {/* Brass radial glow */}
       <div
-        className="absolute -top-32 -right-24 -z-10 h-[600px] w-[600px] rounded-full bg-brass-500/20 blur-[140px]"
+        className="absolute -top-32 -right-24 -z-10 h-[600px] w-[600px] rounded-full bg-brass-400/20 blur-[140px]"
         aria-hidden="true"
       />
       <div
@@ -57,153 +57,85 @@ export default function HeroSection() {
         aria-hidden="true"
       />
 
-      {/* Subtle horizontal accent line */}
-      <div
-        className="absolute inset-x-0 top-1/2 -z-10 h-px bg-gradient-to-r from-transparent via-bone-50/15 to-transparent"
-        aria-hidden="true"
-      />
-
       <motion.div
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="container-site relative z-10 pb-24 pt-32 lg:pb-32 lg:pt-40"
+        className="container-site relative z-10 pb-16 pt-32 lg:pb-24 lg:pt-40"
       >
-        <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-10">
-          {/* Primary content */}
-          <div className="lg:col-span-8">
-            {/* Eyebrow tag */}
-            <motion.div variants={itemVariants} className="mb-6">
-              <span className="inline-flex items-center gap-2.5 rounded-full border border-brass-300/40 bg-brass-500/10 px-3.5 py-1.5 text-[0.7rem] sm:text-xs font-semibold uppercase tracking-[0.18em] text-brass-200">
-                <span className="relative flex h-1.5 w-1.5">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brass-300 opacity-75" />
-                  <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-brass-300" />
-                </span>
-                {headquarters} &middot; Est. {new Date().getFullYear() - yearsInBusiness}
+        <div className="max-w-4xl">
+          {/* Eyebrow tag */}
+          <motion.div variants={itemVariants} className="mb-8">
+            <span className="inline-flex items-center gap-2.5 rounded-full border border-brass-300/30 bg-brass-500/10 px-4 py-2 text-[0.7rem] sm:text-xs font-semibold uppercase tracking-[0.18em] text-brass-200">
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brass-300 opacity-75" />
+                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-brass-300" />
               </span>
-            </motion.div>
+              {headquarters} &middot; Est. {new Date().getFullYear() - yearsInBusiness}
+            </span>
+          </motion.div>
 
-            {/* Headline */}
-            <motion.h1
-              variants={itemVariants}
-              className="text-display-xl sm:text-display-2xl font-display font-bold leading-[0.98] tracking-tight text-bone-50"
-            >
-              {tagline.split(".").map((phrase, idx, arr) => (
-                <span key={idx} className="block">
-                  {phrase.trim()}
-                  {idx < arr.length - 1 ? "." : ""}
-                </span>
-              ))}
-            </motion.h1>
-
-            {/* Subhead */}
-            <motion.p
-              variants={itemVariants}
-              className="mt-7 max-w-2xl text-base sm:text-lg text-bone-50/75 leading-relaxed"
-            >
-              {shortDescription}
-            </motion.p>
-
-            {/* Coverage regions */}
-            <motion.div
-              variants={itemVariants}
-              className="mt-8 flex flex-wrap items-center gap-2 text-xs sm:text-sm text-bone-50/60"
-            >
-              <MapPin
-                className="h-4 w-4 text-brass-300"
-                aria-hidden="true"
-              />
-              <span className="font-medium text-bone-50/80">Serving</span>
-              {coverageRegions.map((region) => (
-                <span
-                  key={region}
-                  className="inline-flex rounded-full border border-bone-50/15 bg-bone-50/5 px-2.5 py-0.5 text-xs text-bone-50/75 backdrop-blur"
-                >
-                  {region}
-                </span>
-              ))}
-            </motion.div>
-
-            {/* CTA row */}
-            <motion.div
-              variants={itemVariants}
-              className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center"
-            >
-              <a href="#estimate" className="btn-brass text-sm sm:text-[0.95rem]">
-                Request a Consultation
-                <ArrowRight className="h-4 w-4" aria-hidden="true" />
-              </a>
-              <a
-                href="#portfolio"
-                className="inline-flex items-center justify-center gap-2 rounded-full border border-bone-50/25 bg-bone-50/5 px-7 py-3.5 text-sm sm:text-[0.95rem] font-semibold text-bone-50 backdrop-blur transition-all duration-300 hover:border-bone-50 hover:bg-bone-50 hover:text-ink"
-                style={{ minHeight: 48 }}
-              >
-                View Active Sites
-                <ArrowRight className="h-4 w-4" aria-hidden="true" />
-              </a>
-            </motion.div>
-          </div>
-
-          {/* Side trust stack */}
-          <motion.aside
+          {/* Headline — high-impact value proposition */}
+          <motion.h1
             variants={itemVariants}
-            className="lg:col-span-4 lg:pl-8 lg:border-l lg:border-bone-50/10"
+            className="text-display-xl sm:text-display-2xl font-display font-bold leading-[0.96] tracking-tight text-bone-50"
           >
-            <div className="flex flex-col gap-5">
-              <div>
-                <p className="numeric-mark text-brass-300">/ 01 — Trust</p>
-                <p className="mt-3 font-display text-2xl font-semibold text-bone-50">
-                  Three lines of defence
-                </p>
-                <p className="mt-2 text-sm text-bone-50/65">
-                  Every project is bonded, insured, and warrantied from the
-                  first day of breaking ground.
-                </p>
-              </div>
+            {tagline.split(".").map((phrase, idx, arr) => (
+              <span key={idx} className="block">
+                {phrase.trim()}
+                {idx < arr.length - 1 && "."}
+              </span>
+            ))}
+          </motion.h1>
 
-              <ul className="space-y-3">
-                {[
-                  { label: "NHBRC Registered", meta: "BG-100527-2021" },
-                  { label: "CIDB Grade 9", meta: "9GB / 9CE" },
-                  { label: "Construction All-Risk", meta: "R50M Cover" },
-                ].map((row) => (
-                  <li
-                    key={row.label}
-                    className="flex items-center justify-between gap-4 rounded-xl border border-bone-50/10 bg-bone-50/5 px-4 py-3 backdrop-blur"
-                  >
-                    <div className="flex items-center gap-3">
-                      <ShieldCheck
-                        className="h-4 w-4 text-brass-300"
-                        aria-hidden="true"
-                      />
-                      <span className="text-sm font-medium text-bone-50">
-                        {row.label}
-                      </span>
-                    </div>
-                    <span className="font-mono text-[0.7rem] uppercase tracking-widest text-bone-50/55">
-                      {row.meta}
-                    </span>
-                  </li>
-                ))}
-              </ul>
+          {/* Supporting text */}
+          <motion.p
+            variants={itemVariants}
+            className="mt-6 max-w-2xl text-base sm:text-lg leading-relaxed text-bone-50/70"
+          >
+            {shortDescription.slice(0, 160)}...
+          </motion.p>
 
-              <div className="flex items-center gap-3 rounded-xl border border-brass-300/20 bg-brass-500/5 px-4 py-3">
-                <div className="flex">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star
-                      key={i}
-                      className="h-4 w-4 fill-brass-300 text-brass-300"
-                      aria-hidden="true"
-                    />
-                  ))}
-                </div>
-                <div className="text-xs leading-tight text-bone-50/80">
-                  <span className="font-semibold text-bone-50">5.0 / 5.0</span>{" "}
-                  from 47 verified project owners
-                </div>
-              </div>
-            </div>
-          </motion.aside>
+          {/* CTA Buttons */}
+          <motion.div
+            variants={itemVariants}
+            className="mt-10 flex flex-col gap-4 sm:flex-row"
+          >
+            <a
+              href="#estimate"
+              className="btn-primary group text-base"
+              style={{ minHeight: 52, paddingLeft: "2rem", paddingRight: "2rem" }}
+            >
+              Request Proposal
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+            </a>
+            <a
+              href="#portfolio"
+              className="group inline-flex items-center justify-center gap-2.5 rounded-full border border-bone-50/20 bg-bone-50/5 px-7 py-3.5 text-sm sm:text-[0.95rem] font-semibold text-bone-50 backdrop-blur transition-all duration-300 hover:border-bone-50 hover:bg-bone-50 hover:text-ink"
+              style={{ minHeight: 52 }}
+            >
+              View Selected Works
+              <ArrowRight className="h-4 w-4" aria-hidden="true" />
+            </a>
+          </motion.div>
+
+          {/* Coverage regions hint */}
+          <motion.div
+            variants={itemVariants}
+            className="mt-12 flex flex-wrap items-center gap-2 text-xs text-bone-50/50"
+          >
+            <MapPin className="h-3.5 w-3.5 text-brass-300" aria-hidden="true" />
+            <span className="font-medium uppercase tracking-wider">Serving</span>
+            {coverageRegions.slice(0, 3).map((region) => (
+              <span
+                key={region}
+                className="rounded-full border border-bone-50/10 bg-bone-50/5 px-2.5 py-1 text-[0.65rem] font-medium backdrop-blur"
+              >
+                {region}
+              </span>
+            ))}
+            <span className="text-bone-50/40">+{coverageRegions.length - 3} more</span>
+          </motion.div>
         </div>
       </motion.div>
 

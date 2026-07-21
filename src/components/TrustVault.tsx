@@ -10,67 +10,67 @@ interface TrustVaultProps {
   className?: string;
 }
 
-const cardVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] as const } },
-};
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.06 } },
-};
-
 export default function TrustVault({
   credentials,
   className,
 }: TrustVaultProps) {
   return (
-    <motion.div
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, margin: "-10% 0px" }}
-      variants={containerVariants}
-      className={cn(
-        "grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3",
-        className,
-      )}
-    >
-      {credentials.map((cred) => (
-        <motion.article
-          key={cred.id}
-          variants={cardVariants}
-          className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-paper p-7 transition-all duration-500 ease-out-quint hover:-translate-y-1 hover:border-brass-300/60 hover:shadow-structural-lg"
+    <div className={cn("overflow-hidden", className)}>
+      {/* Marquee row 1 */}
+      <div className="relative flex overflow-hidden py-4">
+        <motion.div
+          className="flex shrink-0 gap-6 pr-6"
+          animate={{ x: ["0%", "-50%"] }}
+          transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
         >
-          {/* Hairline top accent */}
-          <span
-            className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-transparent via-brass-400 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-            aria-hidden="true"
-          />
-
-          <div className="flex items-start gap-4">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-brass-300/40 bg-brass-50 text-brass-500">
-              <IconRenderer name={cred.icon} className="h-6 w-6" />
+          {[...credentials, ...credentials].map((cred, idx) => (
+            <div
+              key={`${cred.id}-${idx}`}
+              className="group flex shrink-0 items-center gap-5 rounded-2xl border border-border bg-paper px-6 py-4 shadow-soft transition-all duration-300 hover:border-brass-300/50 hover:shadow-structural-lg"
+            >
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-brass-300/30 bg-brass-50 text-brass-500 transition-colors group-hover:bg-brass-500 group-hover:text-bone-50">
+                <IconRenderer name={cred.icon} className="h-5 w-5" />
+              </div>
+              <div className="whitespace-nowrap">
+                <p className="text-sm font-semibold text-ink">{cred.title}</p>
+                <p className="text-xs text-ink-500">Issued by {cred.issuer}</p>
+              </div>
+              <div className="hidden sm:flex items-center gap-2 rounded-md border border-border bg-bone-50 px-2.5 py-1.5">
+                <span className="text-[0.55rem] font-semibold uppercase tracking-widest text-ink-400">
+                  ID
+                </span>
+                <span className="font-mono text-[0.65rem] font-medium text-ink-700">
+                  {cred.credentialId}
+                </span>
+              </div>
             </div>
-            <div className="min-w-0 flex-1">
-              <h3 className="font-display text-base sm:text-lg font-semibold text-ink">
-                {cred.title}
-              </h3>
-              <p className="mt-0.5 text-sm text-ink-500">Issued by {cred.issuer}</p>
+          ))}
+        </motion.div>
+      </div>
+
+      {/* Marquee row 2 (reverse for visual interest) */}
+      <div className="relative flex overflow-hidden py-4">
+        <motion.div
+          className="flex shrink-0 gap-6 pr-6"
+          animate={{ x: ["-50%", "0%"] }}
+          transition={{ duration: 45, repeat: Infinity, ease: "linear" }}
+        >
+          {[...credentials, ...credentials].map((cred, idx) => (
+            <div
+              key={`${cred.id}-rev-${idx}`}
+              className="group flex shrink-0 items-center gap-5 rounded-2xl border border-border bg-paper px-6 py-4 shadow-soft transition-all duration-300 hover:border-brass-300/50 hover:shadow-structural-lg"
+            >
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-brass-300/30 bg-brass-50 text-brass-500 transition-colors group-hover:bg-brass-500 group-hover:text-bone-50">
+                <IconRenderer name={cred.icon} className="h-5 w-5" />
+              </div>
+              <div className="whitespace-nowrap">
+                <p className="text-sm font-semibold text-ink">{cred.title}</p>
+                <p className="text-xs text-ink-500">{cred.description.slice(0, 60)}</p>
+              </div>
             </div>
-          </div>
-
-          <div className="mt-5 inline-flex items-center gap-2 self-start rounded-md border border-border bg-bone-50 px-2.5 py-1.5 font-mono text-[0.7rem] text-ink-700">
-            <span className="text-[0.6rem] font-medium uppercase tracking-widest text-ink-400">
-              ID
-            </span>
-            <span className="font-medium">{cred.credentialId}</span>
-          </div>
-
-          <p className="mt-5 text-sm leading-relaxed text-ink-500">
-            {cred.description}
-          </p>
-        </motion.article>
-      ))}
-    </motion.div>
+          ))}
+        </motion.div>
+      </div>
+    </div>
   );
 }

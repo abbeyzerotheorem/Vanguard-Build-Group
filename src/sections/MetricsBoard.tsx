@@ -18,7 +18,7 @@ export default function MetricsBoard() {
     <section
       id="metrics"
       aria-label="Company metrics"
-      className="section-padding-sm bg-bone-50"
+      className="section-padding-sm bg-paper"
     >
       <div className="container-site">
         <div className="mb-10 flex flex-col items-start justify-between gap-6 sm:mb-14 sm:flex-row sm:items-end">
