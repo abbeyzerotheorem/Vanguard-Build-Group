@@ -22,7 +22,7 @@ export default function AboutSection() {
           <div className="lg:col-span-7">
             <p className="eyebrow">/ 05 — Practice</p>
             <h2 className="mt-3 text-display-md sm:text-display-lg font-display font-bold text-ink text-balance">
-              Built on craftsmanship &amp; integrity
+              Built on craftsmanship & integrity
             </h2>
           </div>
           <div className="lg:col-span-5">
@@ -60,11 +60,11 @@ export default function AboutSection() {
           })}
         </div>
 
-        {/* Team */}
+        {/* Team portraits — full-color, high-contrast styling */}
         <div className="mb-14">
           <div className="mb-10 flex items-end justify-between gap-4">
             <h3 className="text-display-xs sm:text-display-sm font-display font-bold text-ink">
-              Leadership &amp; master craftsmen
+              Leadership & master craftsmen
             </h3>
             <p className="hidden text-sm text-ink-500 sm:block">
               {team.length} directors &middot; 50+ specialists
@@ -77,23 +77,21 @@ export default function AboutSection() {
                 key={member.id}
                 className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-paper transition-all duration-500 ease-out-quint hover:-translate-y-1 hover:border-brass-300/60 hover:shadow-structural-lg"
               >
-                {/* Avatar / headshot */}
-                <div className="team-avatar aspect-[4/5] bg-bone-100">
+                {/* Avatar / headshot — full-color with high contrast */}
+                <div className="aspect-[4/5] overflow-hidden bg-bone-100">
                   <div
-                    className="absolute inset-0"
+                    className="h-full w-full bg-cover bg-center transition-transform duration-700 ease-out-quint group-hover:scale-[1.04]"
                     style={{
-                      backgroundImage: `linear-gradient(180deg, transparent 40%, rgba(14,17,22,0.65) 100%), url('${member.imageSrc}')`,
+                      backgroundImage: `url('${member.imageSrc}')`,
                       backgroundSize: "cover",
-                      backgroundPosition: "center",
+                      backgroundPosition: "center 20%",
                     }}
                     role="img"
                     aria-label={member.name}
                   />
-                  <span className="absolute right-4 top-4 font-mono text-[0.65rem] font-semibold uppercase tracking-widest text-bone-50/90 drop-shadow-md">
+                  <span className="absolute right-4 top-4 z-10 font-mono text-[0.65rem] font-semibold uppercase tracking-widest text-bone-50 drop-shadow-md">
                     / {String(idx + 1).padStart(2, "0")}
                   </span>
-                  {/* Brass overlay on hover */}
-                  <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-t from-brass-500/0 via-transparent to-transparent transition-all duration-500 group-hover:from-brass-500/20" aria-hidden="true" />
                 </div>
 
                 {/* Content */}

@@ -20,7 +20,7 @@ export default function FooterSection() {
     <footer
       id="footer"
       aria-label="Site footer"
-      className="bg-ink text-bone-50"
+      className="bg-ink text-bone-50 border-t border-bone-50/10"
     >
       {/* Main Footer Content */}
       <div className="container-site py-12 sm:py-16">

@@ -69,7 +69,7 @@ export default function Header() {
           "sticky top-0 z-50 transition-all duration-500 ease-out-quint",
           scrolled
             ? "border-b border-border bg-paper/85 backdrop-blur-xl py-2"
-            : "border-b border-transparent bg-transparent py-4 lg:py-5",
+            : "border-b border-transparent bg-ink py-4 lg:py-5",
         )}
       >
         <div className="container-site flex items-center justify-between gap-6">

@@ -200,7 +200,7 @@ export default function EstimateBuilder() {
   }
 
   return (
-    <div className="rounded-2xl border border-border bg-paper shadow-structural overflow-hidden">
+    <div className="rounded-2xl border border-bone-50/10 bg-ink-800/60 backdrop-blur-sm shadow-structural-lg overflow-hidden">
       {/* Live Estimate Preview */}
       <AnimatePresence>
         {estimateResult && (
@@ -209,29 +209,29 @@ export default function EstimateBuilder() {
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-            className="overflow-hidden border-b border-brass-300/20 bg-gradient-to-r from-brass-50/80 via-brass-50/40 to-brass-50/80"
+            className="overflow-hidden border-b border-brass-300/10 bg-gradient-to-r from-brass-500/10 via-brass-500/5 to-brass-500/10"
           >
             <div className="px-6 py-5 sm:px-8 sm:py-6">
-              <p className="eyebrow mb-2">/ Estimated Range</p>
+              <p className="inline-flex items-center gap-2 text-[0.7rem] sm:text-xs font-semibold uppercase tracking-[0.18em] text-brass-400 mb-2">/ Estimated Range</p>
               <div className="flex flex-wrap items-baseline gap-x-6 gap-y-2">
-                <span className="font-display text-display-sm font-bold text-ink">
+                <span className="font-display text-display-sm font-bold text-white">
                   {formatCurrency(estimateResult.min)}
-                  <span className="text-display-xs text-ink-400 mx-1.5">&ndash;</span>
+                  <span className="text-display-xs text-bone-50/50 mx-1.5">&ndash;</span>
                   {formatCurrency(estimateResult.max)}
                 </span>
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-brass-300/40 bg-brass-50 px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-wider text-brass-600">
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-brass-300/30 bg-brass-500/20 px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-wider text-brass-300">
                   <Clock className="h-3 w-3" aria-hidden="true" />
                   {estimateResult.months} months
                 </span>
               </div>
-              <p className="mt-1 text-xs text-ink-400">{estimateResult.label}</p>
+              <p className="mt-1 text-xs text-bone-50/50">{estimateResult.label}</p>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
       {/* Progress Steps */}
-      <div className="border-b border-border px-6 py-5 sm:px-8">
+      <div className="border-b border-bone-50/10 px-6 py-5 sm:px-8">
         <div className="flex items-center justify-between">
           {steps.map((step) => {
             const isActive = currentStep === step.step;
@@ -245,7 +245,7 @@ export default function EstimateBuilder() {
                       ? 'bg-brass-500 text-bone-50 shadow-brass'
                       : isCompleted
                         ? 'bg-forest-500 text-bone-50'
-                        : 'border border-border text-ink-400',
+                        : 'border border-white/20 text-bone-50/60',
                   )}
                 >
                   {isCompleted ? <Check className="h-3.5 w-3.5" strokeWidth={3} /> : step.step}
@@ -253,7 +253,7 @@ export default function EstimateBuilder() {
                 <span
                   className={cn(
                     'hidden text-sm font-medium transition-colors sm:inline',
-                    isActive ? 'text-ink' : 'text-ink-400',
+                    isActive ? 'text-white' : 'text-bone-50/60',
                   )}
                 >
                   {step.title}
@@ -277,8 +277,8 @@ export default function EstimateBuilder() {
                 exit={{ opacity: 0, x: -20 }}
                 transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
               >
-                <h3 className="text-display-xs font-display font-bold text-ink">Select Project Type</h3>
-                <p className="mt-1.5 text-sm text-ink-500">What kind of construction project are you planning?</p>
+                <h3 className="text-display-xs font-display font-bold text-bone-50">Select Project Type</h3>
+                <p className="mt-1.5 text-sm text-bone-50/60">What kind of construction project are you planning?</p>
                 <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
                   {estimate.projectTypes.map((type) => (
                     <button
@@ -329,8 +329,8 @@ export default function EstimateBuilder() {
                 exit={{ opacity: 0, x: -20 }}
                 transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
               >
-                <h3 className="text-display-xs font-display font-bold text-ink">Project Scope</h3>
-                <p className="mt-1.5 text-sm text-ink-500">Describe your project and its size.</p>
+                <h3 className="text-display-xs font-display font-bold text-bone-50">Project Scope</h3>
+                <p className="mt-1.5 text-sm text-bone-50/60">Describe your project and its size.</p>
                 <div className="mt-5 space-y-5">
                   <div>
                     <label htmlFor="scope" className="block text-sm font-medium text-ink mb-1.5">

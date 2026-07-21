@@ -1,5 +1,4 @@
 import { constructionConfig } from '@/data/construction';
-import { cn } from '@/lib/utils';
 import EstimateBuilder from '@/components/EstimateBuilder';
 
 export default function EstimateSection() {
@@ -9,7 +8,7 @@ export default function EstimateSection() {
     <section
       id="estimate"
       aria-label="Request an estimate"
-      className="section-padding bg-structural-blue"
+      className="section-padding bg-ink"
     >
       <div className="container-site">
         {/* Section Header */}
@@ -17,14 +16,14 @@ export default function EstimateSection() {
           <h2 className="text-display-xs sm:text-display-sm lg:text-display-md font-display font-bold text-white">
             Get Your Project Estimate
           </h2>
-          <p className="mt-4 max-w-2xl mx-auto text-base sm:text-lg text-gray-300">
+          <p className="mt-4 max-w-2xl mx-auto text-base sm:text-lg text-bone-50/60">
             Tell us about your vision. We&rsquo;ll provide a detailed, line-item
             estimate within 48 hours — no obligation, no pressure.
           </p>
         </div>
 
-        {/* Estimate Builder Component */}
-        <div className="max-w-3xl mx-auto">
+        {/* Estimate Builder Component — fully integrated on dark background */}
+        <div className="mx-auto max-w-4xl">
           <EstimateBuilder />
         </div>
       </div>

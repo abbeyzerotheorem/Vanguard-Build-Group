@@ -67,7 +67,7 @@ export default function FAQAccordion({
             <button
               type="button"
               onClick={() => toggleItem(faq.id)}
-              className="flex w-full items-start justify-between gap-4 px-5 py-5 text-left transition-colors hover:bg-bone-50 sm:px-7 sm:py-6"
+              className="flex w-full items-start justify-between gap-4 px-5 py-5 text-left transition-colors hover:bg-bone-50 focus-visible:outline-2 focus-visible:outline-brass-500 focus-visible:outline-offset-[-2px] focus-visible:rounded-none sm:px-7 sm:py-6"
               aria-expanded={isOpen}
               aria-controls={`faq-panel-${faq.id}`}
             >

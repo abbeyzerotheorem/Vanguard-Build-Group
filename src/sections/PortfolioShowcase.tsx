@@ -87,10 +87,10 @@ function FeaturedCard({ item }: { item: PortfolioItem }) {
       transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
       className="mb-14 overflow-hidden rounded-3xl border border-border bg-paper shadow-structural-lg transition-all duration-500 hover:shadow-structural-xl lg:mb-20"
     >
-      <div className="grid grid-cols-1 lg:grid-cols-2">
-        {/* Before/After slider */}
-        <div className="relative">
-          <div className="aspect-[4/3] lg:aspect-auto lg:min-h-[480px]">
+      <div className="grid grid-cols-1 lg:grid-cols-12">
+        {/* Before/After slider — spans more columns for visual weight */}
+        <div className="relative lg:col-span-7">
+          <div className="aspect-[4/3] h-full lg:aspect-auto lg:min-h-[520px]">
             <BeforeAfterSlider
               imageBefore={item.imageBefore}
               imageAfter={item.imageAfter}
@@ -99,8 +99,8 @@ function FeaturedCard({ item }: { item: PortfolioItem }) {
           </div>
         </div>
 
-        {/* Featured info panel */}
-        <div className="flex flex-col justify-center gap-5 p-7 sm:p-10 lg:p-12">
+        {/* Featured info panel — matches height exactly */}
+        <div className="flex flex-col justify-center gap-5 p-7 sm:p-10 lg:col-span-5 lg:p-12">
           <div className="flex items-center gap-3">
             <span className="rounded-full bg-brass-500 px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-wider text-bone-50">
               Featured Project
@@ -132,7 +132,7 @@ function FeaturedCard({ item }: { item: PortfolioItem }) {
             ))}
           </div>
 
-          <div className="mt-2 grid grid-cols-2 gap-4 border-t border-border pt-5 text-sm">
+          <div className="mt-auto grid grid-cols-2 gap-4 border-t border-border pt-5 text-sm">
             <div>
               <p className="font-mono text-[0.6rem] uppercase tracking-widest text-ink-400">Budget</p>
               <p className="mt-1 font-semibold text-ink">{item.budgetRange}</p>
@@ -214,7 +214,7 @@ export default function PortfolioShowcase() {
           ) : null}
         </AnimatePresence>
 
-        {/* Rest of portfolio — asymmetrical masonry */}
+        {/* Rest of portfolio — clean 2-column asymmetrical masonry on desktop */}
         {rest.length > 0 ? (
           <AnimatePresence mode="wait">
             <motion.div
@@ -223,23 +223,30 @@ export default function PortfolioShowcase() {
               animate="visible"
               exit={{ opacity: 0, transition: { duration: 0.2 } }}
               variants={containerVariants}
-              className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8"
+              className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:gap-8"
             >
-              {/* Asymmetrical masonry: first card in each row gets wide treatment */}
+              {/* Cohesive 2-column layout: first item spans full width as hero card, rest alternate */}
               {rest.map((item, idx) => {
-                const layout = idx === 0 ? "wide" : idx % 4 === 3 ? "tall" : "square";
+                // First item is a wide hero card spanning both columns
+                // Then items alternate: left-column square, right-column tall, etc.
+                const isFirst = idx === 0;
+                const isWide = isFirst;
+                const isTall = !isFirst && idx % 3 === 0;
+                const isSquare = !isFirst && idx % 3 === 1;
+                // Every third item from the rest starts a new visual row
                 return (
                   <div
                     key={item.id}
                     className={
-                      idx === 0
-                        ? "sm:col-span-2 lg:col-span-3"
-                        : idx % 4 === 3
-                          ? "sm:col-span-2 lg:col-span-3 lg:col-start-1 lg:col-end-2"
-                          : ""
+                      isWide
+                        ? "sm:col-span-2"
+                        : ""
                     }
                   >
-                    <ProjectCard item={item} layout={layout} />
+                    <ProjectCard
+                      item={item}
+                      layout={isWide ? "wide" : isTall ? "tall" : "square"}
+                    />
                   </div>
                 );
               })}
