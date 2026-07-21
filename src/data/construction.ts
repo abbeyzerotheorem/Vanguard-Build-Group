@@ -134,7 +134,7 @@ export const constructionConfig: ConstructionConfig = {
   portfolio: [
     {
       id: "sandton-penthouse",
-      title: "Sandton Sky Residence",
+      title: "",
       location: "Sandton, Gauteng",
       category: "Residential",
       completedYear: 2025,
@@ -149,7 +149,7 @@ export const constructionConfig: ConstructionConfig = {
     },
     {
       id: "centurion-commercial-park",
-      title: "Centurion Gate Office Park",
+      title: "",
       location: "Centurion, Gauteng",
       category: "Commercial",
       completedYear: 2024,
@@ -164,7 +164,7 @@ export const constructionConfig: ConstructionConfig = {
     },
     {
       id: "umhlanga-lifestyle-estate",
-      title: "Umhlanga Ridge Estate Residence",
+      title: "",
       location: "Umhlanga, KwaZulu-Natal",
       category: "Residential",
       completedYear: 2025,
@@ -179,7 +179,7 @@ export const constructionConfig: ConstructionConfig = {
     },
     {
       id: "stirling-primary-school",
-      title: "Stirling Primary School Campus",
+      title: "",
       location: "East London, Eastern Cape",
       category: "Institutional",
       completedYear: 2023,
@@ -194,7 +194,7 @@ export const constructionConfig: ConstructionConfig = {
     },
     {
       id: "waterkloof-heritage",
-      title: "Waterkloof Heritage Villa",
+      title: "",
       location: "Waterkloof, Pretoria",
       category: "Residential",
       completedYear: 2024,
@@ -209,7 +209,7 @@ export const constructionConfig: ConstructionConfig = {
     },
     {
       id: "midrand-logistics-hub",
-      title: "Midrand Logistics & Distribution Hub",
+      title: "",
       location: "Midrand, Gauteng",
       category: "Commercial",
       completedYear: 2024,
